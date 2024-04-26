@@ -17,14 +17,31 @@
 // http://neuralnetworksanddeeplearning.com/
 //                                  chap1.html
 
-// Sigmoid Neurons:
-// http://neuralnetworksanddeeplearning.com/
-//               chap1.html#sigmoid_neurons
-
 
 
 #include "../CppBase/BasicTypes.h"
-// #include "../CppBase/CharBuf.h"
+#include "../CppMem/Float32Array.h"
+
+
+
+
+// Matrix notation:
+// w for weight
+// w<sup>L<sub>jk
+// The weight for the connection
+// from the kth neuron in the (L - 1)th
+// layer to the jth neuron in the Lth
+// layer.
+
+// b for bias.
+// b<sup>L<sub>j
+// bias on the jth neuron in the Lth layer.
+
+// a for activation
+// a<sup>L<sub>j
+// Activation for the jth neuron in
+//            the Lth layer.
+//            Meaning the output of that neuron.
 
 
 
@@ -32,7 +49,17 @@ class Neuron
   {
   private:
   bool testForCopy = false;
-  Float64 output;
+  Float32 activation; // The output from
+            // the sigmoid Activation function.
+
+  // Each dendrite has a weight.
+  // The weight from this neuron to each
+  // neuron in the L - 1 layer.
+  Float32Array weight;
+
+  Float32 bias; // The bias is not something
+                // that comes from another
+                // neuron.
 
   public:
   Neuron( void )
@@ -51,12 +78,28 @@ class Neuron
     {
     }
 
-  static Float64 sigmoid( Float64 sum );
+  Float32 sigmoid( Float32 z );
   void test( void );
 
-  inline Float64 getOutput( void )
+  inline Float32 getActivation( void )
     {
-    return output;
+    return activation;
+    }
+
+  inline Float32 getBias( void )
+    {
+    return bias;
+    }
+
+  inline Float32 getWeight( const Int32 where )
+    {
+    return weight.getVal( where );
+    }
+
+  inline void setWeight( const Int32 where,
+                         const Float32 toSet )
+    {
+    weight.setVal( where, toSet );
     }
 
   };

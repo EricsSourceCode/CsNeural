@@ -16,35 +16,37 @@
 
 
 
-Float64 Neuron::sigmoid( Float64 sum )
+Float32 Neuron::sigmoid( Float32 z )
 {
-// sum is the sum of all the values and
-// weights minus the bias.
-// WjXj - b
+// z is called the Weighted Input.
 
 // Sigmoid Neuron
 // Sigmoid function
 
-return 1.0 / ( 1.0 + MathC::exp( -sum ));
+activation = Casting::float64To32(
+          1.0 / ( 1.0 + MathC::exp(
+              Casting::float32To64( -z ))));
+
+return activation;
 }
 
 
 
 void Neuron::test( void )
 {
-Float64 x = -100.0;
+Float32 x = -100.0;
 
 // The y output goes from zero to one.
 
 for( Int32 count = 0; count < 200; count++ )
   {
   StIO::printF( "x: " );
-  StIO::printFlt64( x );
+  StIO::printFlt64( Casting::float32To64( x ));
   StIO::putLF();
   x += 1;
-  Float64 y = sigmoid( x );
+  Float32 y = sigmoid( x );
   StIO::printF( "y: " );
-  StIO::printFlt64( y );
+  StIO::printFlt64( Casting::float32To64( y ));
   StIO::putLF();
   }
 }
