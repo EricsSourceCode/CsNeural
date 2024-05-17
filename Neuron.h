@@ -16,6 +16,11 @@
 // A good tutorial:
 // http://neuralnetworksanddeeplearning.com/
 //                                  chap1.html
+//                                  chap2.html
+
+// Sigmoid Neurons:
+// http://neuralnetworksanddeeplearning.com/
+//                   chap1.html#sigmoid_neurons
 
 
 
@@ -51,11 +56,13 @@ class Neuron
   bool testForCopy = false;
   Float32 activation; // The output from
             // the sigmoid Activation function.
+            // Also called y.
 
   // Each dendrite has a weight.
   // The weight from this neuron to each
   // neuron in the L - 1 layer.
-  Float32Array weight;
+  Float32Array weightAr;
+  Int32 weightArSize = 1;
 
   Float32 bias; // The bias is not something
                 // that comes from another
@@ -78,28 +85,37 @@ class Neuron
     {
     }
 
-  Float32 sigmoid( Float32 z );
+  Float32 sigmoid( Float64 z );
   void test( void );
 
-  inline Float32 getActivation( void )
+  inline Float32 getActivation( void ) const
     {
     return activation;
     }
 
-  inline Float32 getBias( void )
+  inline void setActivation(
+                      const Float32 setTo )
+    {
+    activation = setTo;
+    }
+
+  inline Float32 getBias( void ) const
     {
     return bias;
     }
 
-  inline Float32 getWeight( const Int32 where )
+  inline Float32 getWeight(
+                   const Int32 where ) const
     {
-    return weight.getVal( where );
+    return weightAr.getVal( where );
     }
 
   inline void setWeight( const Int32 where,
                          const Float32 toSet )
     {
-    weight.setVal( where, toSet );
+    weightAr.setVal( where, toSet );
     }
+
+  void setRandomWeights( void );
 
   };
