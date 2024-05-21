@@ -24,6 +24,7 @@ class NeuralNet
   NeuronLayer inputLayer;
   NeuronLayer hiddenLayer;
   NeuronLayer outputLayer;
+  Float32Array testLabelAr;
 
   public:
   NeuralNet( void )

@@ -90,5 +90,3 @@ for( Int32 count = 0; count < max; count++ )
   setWeight( count, setTo );
   }
 }
-
-
