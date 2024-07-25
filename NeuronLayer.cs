@@ -52,21 +52,30 @@ catch( Exception ) // Except )
 
 
 
-/*
-
-void NeuronLayer::setSize( const Int32 howBig )
+internal void setSize( int howBig )
 {
+int arraySize = neuronAr.Length;
 if( howBig == arraySize )
   return;
 
-arraySize = howBig;
-delete[] neuronAr;
-neuronAr = new Neuron[
-                 Casting::i32ToU64( arraySize )];
+try
+{
+neuronAr = new Neuron[howBig];
+for( int count = 0; count < howBig; count++ )
+  neuronAr[count] = new Neuron( mData );
+
+}
+catch( Exception ) // Except )
+  {
+  throw new Exception(
+          "Not enough memory for NeuronLayer." );
+  }
 }
 
 
 
+
+/*
 void NeuronLayer::setRandomOutput( void )
 {
 const Int32 max = arraySize;

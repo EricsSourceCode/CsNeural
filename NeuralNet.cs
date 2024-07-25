@@ -20,10 +20,10 @@ using System;
 public class NeuralNet
 {
 private MainData mData;
-//  NeuronLayer inputLayer;
+NeuronLayer inputLayer;
 //  NeuronLayer hiddenLayer;
-//  NeuronLayer outputLayer;
-//  Float32Array testLabelAr;
+NeuronLayer outputLayer;
+Float32Array testLabelAr;
 
 
 
@@ -36,49 +36,51 @@ private NeuralNet()
 internal NeuralNet( MainData useMainData )
 {
 mData = useMainData;
+inputLayer = new NeuronLayer( mData );
+//  hiddenLayer;
+outputLayer = new NeuronLayer( mData );;
+testLabelAr = new Float32Array();
 }
 
 
-/*
-void NeuralNet::test( void )
+
+internal void test()
 {
-StIO::putS( "\n\nThis is the Neural Net test." );
+// Train one neuron.
+
+mData.showStatus(
+          "This is the Neural Net test." );
+
+inputLayer.setSize( 15 );
+// hiddenLayer.setSize( 10 );
+
+// These two have to be the same size
+// because of the output error function.
+outputLayer.setSize( 1 );
+testLabelAr.setSize( 1 );
 
 
+/*
 // Set the input layer neurons (activation value)
 // to random values
 // between 0 and 1.  Because that is what they
 // would be from the sigmoid function.
 
-inputLayer.setSize( 15 );
-hiddenLayer.setSize( 10 );
+Random rand = new Random();
 
-// These two have to be the same size
-// because of the output error function.
-outputLayer.setSize( 10 );
-testLabelAr.setSize( 10 );
+// Random double between 0 and 100.
+double nextRand = rand.NextDouble() * 100;
 
 testLabelAr.setVal( 0, 0.0f );
-testLabelAr.setVal( 1, 0.1f );
-testLabelAr.setVal( 2, 0.2f );
-testLabelAr.setVal( 3, 0.3f );
-testLabelAr.setVal( 4, 0.4f );
-testLabelAr.setVal( 5, 0.5f );
-testLabelAr.setVal( 6, 0.6f );
-testLabelAr.setVal( 7, 0.7f );
-testLabelAr.setVal( 8, 0.8f );
-testLabelAr.setVal( 9, 0.9f );
 
-
-inputLayer.setRandomOutput();
-
-// hiddenLayer;
-// outputLayer;
-
-StIO::putS( "Neural Net test finished.\n\n" );
-}
 */
+
+mData.showStatus( "Neural Net test finished." );
+}
+
 
 
 
 } // Class
+
+

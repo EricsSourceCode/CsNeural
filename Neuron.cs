@@ -9,6 +9,28 @@
 
 
 
+/*
+What about that error surface?
+Max and min weights?
+
+I don't have an NVidea processor.
+Or any real GPU on my notebook.
+
+
+ReLU f(x) = max( 0, x )
+ReLU(x):
+  if x>0:
+    return x
+  else:
+    return 0
+
+Derivivative of ReLU(x):
+  if x>0:
+    return 1
+  else:
+    return 0
+
+*/
 
 
 
@@ -28,6 +50,9 @@
 
 using System;
 
+
+// My MathF class:
+// MathF.log( double x )
 
 // Matrix notation:
 // w for weight
