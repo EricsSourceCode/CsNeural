@@ -17,6 +17,15 @@ using System;
 
 
 
+// This is not done with GPUs and matrices
+// because it is explanatory.
+// I don't have an NVidea processor on
+// my laptop computer for CUDA, and those
+// kinds of optimizations are for a much
+// later version.
+
+
+
 public class NeuralNet
 {
 private MainData mData;
@@ -44,36 +53,52 @@ testLabelAr = new Float32Array();
 
 
 
+
 internal void test()
 {
-// Train one neuron.
+/*
+Train one neuron.
+Inputs are just static values.
+One output.
+Use:
+Quadratic Cost function
+Sigmoid function.
+
+*/
 
 mData.showStatus(
           "This is the Neural Net test." );
 
 inputLayer.setSize( 15 );
+outputLayer.setInputSize( 15 );
+
 // hiddenLayer.setSize( 10 );
 
 // These two have to be the same size
 // because of the output error function.
 outputLayer.setSize( 1 );
 testLabelAr.setSize( 1 );
+testLabelAr.setVal( 0, 1.0F );
 
-
-/*
 // Set the input layer neurons (activation value)
-// to random values
-// between 0 and 1.  Because that is what they
-// would be from the sigmoid function.
+// to random values.
+// They might be a number representing the
+// index of a word in a dictionary, for
+// example.
 
 Random rand = new Random();
 
-// Random double between 0 and 100.
-double nextRand = rand.NextDouble() * 100;
+int max = inputLayer.getSize();
 
-testLabelAr.setVal( 0, 0.0f );
+inputLayer.setActivationAt( 0, 1.0F );
 
-*/
+// Random value between 0 and 100.
+for( int count = 1; count < max; count++ )
+  {
+  inputLayer.setActivationAt( count,
+           (float)(rand.NextDouble() * 100 ));
+  }
+
 
 mData.showStatus( "Neural Net test finished." );
 }
@@ -82,5 +107,3 @@ mData.showStatus( "Neural Net test finished." );
 
 
 } // Class
-
-

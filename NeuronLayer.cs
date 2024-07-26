@@ -52,6 +52,13 @@ catch( Exception ) // Except )
 
 
 
+internal int getSize()
+{
+return neuronAr.Length;
+}
+
+
+
 internal void setSize( int howBig )
 {
 int arraySize = neuronAr.Length;
@@ -74,38 +81,57 @@ catch( Exception ) // Except )
 
 
 
-
-/*
-void NeuronLayer::setRandomOutput( void )
+internal void setInputSize( int setTo )
 {
-const Int32 max = arraySize;
-for( Int32 count = 0; count < max; count++ )
+// All of the neurons in this layer have
+// the same number of inputs from the
+// previous layer.
+
+int max = neuronAr.Length;
+for( int count = 0; count < max; count++ )
   {
-  Float32 setTo = Randomish::
-                      makeRandomFloat32();
-  for( Int32 countBits = 0; countBits < 32;
-                                  countBits++ )
-    {
-    // The output from the sigmoid function
-    // would be 0 to 1.
-
-    if( setTo <= 1.0f )
-      break;
-
-    // This is a crude way of making
-    // sort-of-random numbers.
-    setTo = setTo / 10.0f;
-    }
-
-  StIO::printF( "Activity: " );
-  StIO::printFlt64( static_cast<Float64>(
-                                       setTo ));
-  StIO::putLF();
-
-  neuronAr[count].setActivation( setTo );
+  neuronAr[count].setInputSize( setTo );
   }
 }
-*/
+
+
+
+internal float getActivationAt( int where )
+{
+// By convention, index zero is for the
+// bias, so this always returns 1 for the
+// Activation at index 0.
+
+if( where == 0 )
+  return 1;
+
+int max = neuronAr.Length;
+RangeT.test( where, 0, max - 1,
+       "NeuronLayer.getActivationAt() range." );
+
+return neuronAr[where].getActivation();
+}
+
+
+
+internal void setActivationAt( int where,
+                               float setTo )
+{
+// By convention, it is the bias.
+if( where == 0 )
+  {
+  neuronAr[where].setActivation( 1.0F );
+  return;
+  }
+
+int max = neuronAr.Length;
+RangeT.test( where, 0, max - 1,
+       "NeuronLayer.setActivationAt() range." );
+
+neuronAr[where].setActivation( setTo );
+}
+
+
 
 
 } // Class

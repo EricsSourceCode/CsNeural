@@ -9,14 +9,8 @@
 
 
 
+
 /*
-What about that error surface?
-Max and min weights?
-
-I don't have an NVidea processor.
-Or any real GPU on my notebook.
-
-
 ReLU f(x) = max( 0, x )
 ReLU(x):
   if x>0:
@@ -34,44 +28,12 @@ Derivivative of ReLU(x):
 
 
 
-// A good tutorial:
-// http://neuralnetworksanddeeplearning.com/
-//                                  chap1.html
-//                                  chap2.html
-
-// Sigmoid Neurons:
-// http://neuralnetworksanddeeplearning.com/
-//                   chap1.html#sigmoid_neurons
-
-
-// GPT: Generative pre-trained transformer
-// A type of large language model.
-
-
 using System;
+
 
 
 // My MathF class:
 // MathF.log( double x )
-
-// Matrix notation:
-// w for weight
-// w<sup>L<sub>jk
-// The weight for the connection
-// from the kth neuron in the (L - 1)th
-// layer to the jth neuron in the Lth
-// layer.
-
-// b for bias.
-// b<sup>L<sub>j
-// bias on the jth neuron in the Lth layer.
-
-// a for activation
-// a<sup>L<sub>j
-// Activation for the jth neuron in
-//            the Lth layer.
-//            Meaning the output of that neuron.
-
 
 
 
@@ -83,9 +45,9 @@ using System;
 public class Neuron
 {
 private MainData mData;
-// private float activation; // The output from
-            // the Activation function.
-            // Also called y.
+private float delta = 0;
+private float zSum = 0;
+private float activation = 0; // Also called y.
 
 // Each dendrite has a weight.
 // The weight from this neuron to each
@@ -95,7 +57,7 @@ private Float32Array weightAr;
 // The weight at index 0 is the standard way
 // of doing the bias.  The input is fixed
 // at 1 and the weight makes the bias value.
-// z = sigma( inputs * weights) + (bias * 1)
+
 
 
 private Neuron()
@@ -107,23 +69,69 @@ internal Neuron( MainData useMainData )
 {
 mData = useMainData;
 weightAr = new Float32Array();
-// weightAr.setSize( to what? );
+}
+
+
+internal void setInputSize( int setTo )
+{
+weightAr.setSize( setTo );
 }
 
 
 
-/*
+internal float calcZ( NeuronLayer nLayer )
+{
+// By convention, the weight at index
+// zero is the bias.  The input at index
+// zero should always be 1.
+
+int max = weightAr.getSize();
+if( max != nLayer.getSize())
+  {
+  throw new Exception(
+        "Neuron.calcZ() sizes not equal." );
+  }
+
+float z = 0;
+for( int count = 0; count < max; count++ )
+  {
+  z += nLayer.getActivationAt( count ) *
+                   weightAr.getVal( count );
+  }
+
+zSum = z;
+return zSum;
+}
+
+
+
+internal float getZSum()
+{
+return zSum;
+}
+
+
+internal float getDelta()
+{
+return delta;
+}
+
+
+
 internal float getActivation()
 {
 return activation;
 }
 
-  inline void setActivation(
-                      const Float32 setTo )
-    {
-    activation = setTo;
-    }
 
+internal void setActivation( float setTo )
+{
+activation = setTo;
+}
+
+
+
+/*
   inline Float32 getWeight(
                    const Int32 where ) const
     {
@@ -160,62 +168,28 @@ activation = static_cast<Float32>(
 
 return activation;
 }
-
-
-
-void Neuron::test( void )
-{
-Float32 x = -100.0;
-
-// The y output goes from zero to one.
-
-for( Int32 count = 0; count < 200; count++ )
-  {
-  StIO::printF( "x: " );
-  StIO::printFlt64( static_cast<Float64>( x ));
-  StIO::putLF();
-  x += 1;
-  Float32 y = sigmoid(
-                 static_cast<Float64>( x ));
-  StIO::printF( "y: " );
-  StIO::printFlt64( static_cast<Float64>( y ));
-  StIO::putLF();
-  }
-}
-
-
-
-
-void Neuron::setRandomWeights( void )
-{
-const Int32 max = weightArSize;
-for( Int32 count = 0; count < max; count++ )
-  {
-  Float32 setTo = Randomish::
-                      makeRandomFloat32();
-  for( Int32 countBits = 0; countBits < 32;
-                                  countBits++ )
-    {
-    // The output from the sigmoid function
-    // would be 0 to 1.
-
-    if( setTo <= 1.0f )
-      break;
-
-    // This is a crude way of making
-    // sort-of-random numbers.
-    setTo = setTo / 10.0f;
-    }
-
-  StIO::printF( "Weight: " );
-  StIO::printFlt64( static_cast<Float64>(
-                                       setTo ));
-  StIO::putLF();
-
-  setWeight( count, setTo );
-  }
-}
 */
+
+
+
+====
+internal void setRandomWeights()
+{
+Random rand = new Random();
+
+int max = weightAr.getSize();
+
+// Random value between 0 and 100.
+for( int count = 0; count < max; count++ )
+  {
+  weightAr.setVal( count,
+           (float)(rand.NextDouble() * 100 ));
+
+  mData.showStatus( 
+       "Weight: " + weightAr.getVal( count ));
+  }
+}
+
 
 
 } // Class
