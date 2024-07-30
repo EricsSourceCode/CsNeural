@@ -81,7 +81,8 @@ catch( Exception ) // Except )
 
 
 
-internal void setInputSize( int setTo )
+
+internal void setWeightArSize( int setTo )
 {
 // All of the neurons in this layer have
 // the same number of inputs from the
@@ -89,9 +90,8 @@ internal void setInputSize( int setTo )
 
 int max = neuronAr.Length;
 for( int count = 0; count < max; count++ )
-  {
-  neuronAr[count].setInputSize( setTo );
-  }
+  neuronAr[count].setWeightArSize( setTo );
+
 }
 
 
@@ -99,8 +99,10 @@ for( int count = 0; count < max; count++ )
 internal float getActivationAt( int where )
 {
 // By convention, index zero is for the
-// bias, so this always returns 1 for the
-// Activation at index 0.
+// bias, so this should always return 1 for
+// the Activation at index 0.
+
+// Is that true of every layer?
 
 if( where == 0 )
   return 1;
@@ -129,6 +131,29 @@ RangeT.test( where, 0, max - 1,
        "NeuronLayer.setActivationAt() range." );
 
 neuronAr[where].setActivation( setTo );
+}
+
+
+
+internal void setRandomWeights( float maxWeight )
+{
+int max = neuronAr.Length;
+for( int count = 0; count < max; count++ )
+  {
+  neuronAr[count].setRandomWeights(
+                    maxWeight, count );
+  }
+}
+
+
+
+internal void calcZ( NeuronLayer prevLayer )
+{
+int max = neuronAr.Length;
+for( int count = 0; count < max; count++ )
+  {
+  neuronAr[count].calcZ( prevLayer );
+  }
 }
 
 

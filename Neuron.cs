@@ -36,6 +36,10 @@ using System;
 // MathF.log( double x )
 
 
+// The weight at index 0 is the standard way
+// of doing the bias.  The input is fixed
+// at 1 and the weight makes the bias value.
+
 
 // namespace
 
@@ -47,16 +51,13 @@ public class Neuron
 private MainData mData;
 private float delta = 0;
 private float zSum = 0;
-private float activation = 0; // Also called y.
+private float activation = 0;
 
-// Each dendrite has a weight.
 // The weight from this neuron to each
 // neuron in the L - 1 layer.
+
 private Float32Array weightAr;
 
-// The weight at index 0 is the standard way
-// of doing the bias.  The input is fixed
-// at 1 and the weight makes the bias value.
 
 
 
@@ -72,21 +73,21 @@ weightAr = new Float32Array();
 }
 
 
-internal void setInputSize( int setTo )
+internal void setWeightArSize( int setTo )
 {
 weightAr.setSize( setTo );
 }
 
 
 
-internal float calcZ( NeuronLayer nLayer )
+internal float calcZ( NeuronLayer prevLayer )
 {
 // By convention, the weight at index
 // zero is the bias.  The input at index
 // zero should always be 1.
 
 int max = weightAr.getSize();
-if( max != nLayer.getSize())
+if( max != prevLayer.getSize())
   {
   throw new Exception(
         "Neuron.calcZ() sizes not equal." );
@@ -95,11 +96,20 @@ if( max != nLayer.getSize())
 float z = 0;
 for( int count = 0; count < max; count++ )
   {
-  z += nLayer.getActivationAt( count ) *
+  mData.showStatus( "activation: " +
+        prevLayer.getActivationAt( count ));
+  mData.showStatus( "weight: " +
+        weightAr.getVal( count ));
+
+  z += prevLayer.getActivationAt( count ) *
                    weightAr.getVal( count );
   }
 
 zSum = z;
+mData.showStatus( "zSum: " + zSum );
+mData.showStatus( " " );
+mData.showStatus( " " );
+
 return zSum;
 }
 
@@ -144,7 +154,6 @@ activation = setTo;
     weightAr.setVal( where, toSet );
     }
 
-  void setRandomWeights( void );
 
 
 Float32 Neuron::sigmoid( Float64 z )
@@ -172,21 +181,40 @@ return activation;
 
 
 
-====
-internal void setRandomWeights()
+internal void setRandomWeights( float maxWeight,
+                                int randIndex )
 {
-Random rand = new Random();
+TimeEC seedTime = new TimeEC();
+seedTime.setToNow();
+// int timeSeed = (int)seedTime.getTicks();
+int seed = (int)seedTime.getIndex();
+
+seed += randIndex;
+
+Random rand = new Random( seed );
+float halfWeight = maxWeight / 2;
 
 int max = weightAr.getSize();
 
-// Random value between 0 and 100.
+// Random value between 0 and maxWeight.
+// It is shifted down by half of max weight
+// so that the range is -50 to 50 if the
+// max weight is 100.
+
 for( int count = 0; count < max; count++ )
   {
-  weightAr.setVal( count,
-           (float)(rand.NextDouble() * 100 ));
+  // float weight = randIndex + count;
+  float weight = (float)(rand.NextDouble() *
+                                  maxWeight );
 
-  mData.showStatus( 
-       "Weight: " + weightAr.getVal( count ));
+  // About half of the weights will be
+  // negative.
+  weight -= halfWeight;
+
+  weightAr.setVal( count, weight );
+
+  // mData.showStatus(
+  //   "Weight: " + weightAr.getVal( count ));
   }
 }
 
