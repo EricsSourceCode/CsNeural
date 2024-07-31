@@ -96,21 +96,28 @@ if( max != prevLayer.getSize())
 float z = 0;
 for( int count = 0; count < max; count++ )
   {
-  mData.showStatus( "activation: " +
-        prevLayer.getActivationAt( count ));
-  mData.showStatus( "weight: " +
-        weightAr.getVal( count ));
-
   z += prevLayer.getActivationAt( count ) *
                    weightAr.getVal( count );
   }
 
 zSum = z;
-mData.showStatus( "zSum: " + zSum );
-mData.showStatus( " " );
-mData.showStatus( " " );
 
 return zSum;
+}
+
+
+internal float calcActivation()
+{
+// Pick an activation function to use.
+
+mData.showStatus( "zSum: " + zSum );
+
+activation = sigmoid( zSum );
+// activation = reLU( zSum );
+
+mData.showStatus( "activation: " + activation );
+
+return activation;
 }
 
 
@@ -141,22 +148,21 @@ activation = setTo;
 
 
 
-/*
-  inline Float32 getWeight(
-                   const Int32 where ) const
-    {
-    return weightAr.getVal( where );
-    }
-
-  inline void setWeight( const Int32 where,
-                         const Float32 toSet )
-    {
-    weightAr.setVal( where, toSet );
-    }
+internal float getWeight( int where )
+{
+return weightAr.getVal( where );
+}
 
 
 
-Float32 Neuron::sigmoid( Float64 z )
+internal void setWeight( int where, float setTo )
+{
+weightAr.setVal( where, setTo );
+}
+
+
+
+internal static float sigmoid( float z )
 {
 // z is called the Weighted Input.
 // Also called the logit.  LOH-jit
@@ -169,15 +175,12 @@ Float32 Neuron::sigmoid( Float64 z )
 // Derivative:
 // (1.0 + exp( -z ))^-2  *  (e^-z)
 
-// Sigmoid Neuron
-// Sigmoid function
+float a = (float)(1.0 / ( 1.0 +
+                           MathF.exp( -z )));
 
-activation = static_cast<Float32>(
-          1.0 / ( 1.0 + MathC::exp( -z )));
-
-return activation;
+return a;
 }
-*/
+
 
 
 
@@ -186,8 +189,9 @@ internal void setRandomWeights( float maxWeight,
 {
 TimeEC seedTime = new TimeEC();
 seedTime.setToNow();
-// int timeSeed = (int)seedTime.getTicks();
-int seed = (int)seedTime.getIndex();
+// int seed = (int)seedTime.getTicks();
+int seed = (int)(seedTime.getIndex()
+                 & 0x7FFFFFFFF );
 
 seed += randIndex;
 
@@ -203,7 +207,6 @@ int max = weightAr.getSize();
 
 for( int count = 0; count < max; count++ )
   {
-  // float weight = randIndex + count;
   float weight = (float)(rand.NextDouble() *
                                   maxWeight );
 
@@ -212,9 +215,6 @@ for( int count = 0; count < max; count++ )
   weight -= halfWeight;
 
   weightAr.setVal( count, weight );
-
-  // mData.showStatus(
-  //   "Weight: " + weightAr.getVal( count ));
   }
 }
 

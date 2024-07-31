@@ -158,5 +158,17 @@ for( int count = 0; count < max; count++ )
 
 
 
+internal void calcActivation()
+{
+int max = neuronAr.Length;
+for( int count = 0; count < max; count++ )
+  {
+  neuronAr[count].calcActivation();
+  }
+}
+
+
+
+
 
 } // Class

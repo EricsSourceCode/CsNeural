@@ -30,6 +30,7 @@ NeuronLayer inputLayer;
 NeuronLayer hiddenLayer;
 NeuronLayer outputLayer;
 Float32Array testLabelAr;
+Float32Array errorOutAr;
 
 
 
@@ -46,6 +47,7 @@ inputLayer = new NeuronLayer( mData );
 hiddenLayer = new NeuronLayer( mData );
 outputLayer = new NeuronLayer( mData );
 testLabelAr = new Float32Array();
+errorOutAr = new Float32Array();
 }
 
 
@@ -63,11 +65,14 @@ setRandomWeights( 100 );
 setRandomInput();
 
 
+// The neuron at zero is always the bias.
+testLabelAr.setVal( 0, 0.0F );
+
 
 // Set the result to 1 for true.
-testLabelAr.setVal( 0, 1.0F );
+testLabelAr.setVal( 1, 1.0F );
 
-flowForward();
+forwardPass();
 
 
 mData.showStatus( "Neural Net test finished." );
@@ -84,10 +89,15 @@ inputLayer.setWeightArSize( 1 );
 hiddenLayer.setSize( 10 );
 hiddenLayer.setWeightArSize( 15 );
 
-outputLayer.setSize( 1 );
+// The output at zero is the bias, so it is
+// one output at index 1.
+
+outputLayer.setSize( 2 );
+
 outputLayer.setWeightArSize( 10 );
 
-testLabelAr.setSize( 1 );
+testLabelAr.setSize( 2 );
+errorOutAr.setSize( 2 );
 }
 
 
@@ -114,8 +124,9 @@ private void setRandomInput()
 
 TimeEC seedTime = new TimeEC();
 seedTime.setToNow();
-// int timeSeed = (int)seedTime.getTicks();
-int seed = (int)seedTime.getIndex();
+// int seed = (int)seedTime.getTicks();
+int seed = (int)(seedTime.getIndex()
+                 & 0x7FFFFFFFF );
 
 // seed += randIndex;
 
@@ -136,17 +147,28 @@ for( int count = 1; count < max; count++ )
 
 
 
-private void flowForward()
+private void forwardPass()
 {
-// The forward pass.
-
 hiddenLayer.calcZ( inputLayer );
+hiddenLayer.calcActivation();
 
-// NeuronLayer outputLayer;
-// Float32Array testLabelAr;
+outputLayer.calcZ( hiddenLayer );
+outputLayer.calcActivation();
 
+// The value at zero is the bias.
+// So the one output is at index 1.
+float aOut = outputLayer.getActivationAt( 1 );
+float testOut = testLabelAr.getVal( 1 );
+
+float error = testOut - aOut;
+errorOutAr.setVal( 1, error );
+ 
+mData.showStatus( "aOut: " + aOut );
+mData.showStatus( "testOut: " + testOut );
+mData.showStatus( "error: " + error );
 
 }
+
 
 
 } // Class
