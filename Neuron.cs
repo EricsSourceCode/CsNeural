@@ -56,7 +56,7 @@ private float activation = 0;
 // The weight from this neuron to each
 // neuron in the L - 1 layer.
 
-private Float32Array weightAr;
+private FloatVec weightAr;
 
 
 
@@ -69,7 +69,7 @@ private Neuron()
 internal Neuron( MainData useMainData )
 {
 mData = useMainData;
-weightAr = new Float32Array();
+weightAr = new FloatVec( mData );
 }
 
 
