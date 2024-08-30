@@ -17,7 +17,6 @@ using System;
 
 
 
-// Later versions will be more optimized.
 // There is that old saying:
 // Make it work first, then make it work fast.
 
@@ -29,7 +28,6 @@ private MainData mData;
 private NeuronLayer inputLayer;
 private NeuronLayer hiddenLayer;
 private NeuronLayer outputLayer;
-// private FloatVec testLabelAr;
 private FloatVec errorOutAr;
 private FloatMatrix inputMatrix;
 
@@ -54,15 +52,12 @@ mData = useMainData;
 inputMatrix = useMatrix;
 testLabelVec = useLabelVec;
 
-int rows = inputMatrix.getRows();
-
 int last = inputMatrix.getLastAppend();
-
-/*
-======
-if( testLabelVec.getSize() < last )
-
-*/
+if( testLabelVec.getSize() <= last )
+  {
+  throw new Exception(
+                "testLabelVec too small." );
+  }
 
 inputLayer = new NeuronLayer( mData );
 hiddenLayer = new NeuronLayer( mData );
@@ -81,7 +76,7 @@ setupNetTopology();
 
 // setRandomWeights();
 
-
+/*
 
 // The neuron at zero is always the bias.
 // testLabelAr.setVal( 0, 0.0F );
@@ -90,7 +85,7 @@ setupNetTopology();
 // testLabelAr.setVal( 1, 1.0F );
 
 forwardPass();
-
+*/
 
 mData.showStatus( "Neural Net test finished." );
 }
@@ -101,23 +96,23 @@ private void setupNetTopology()
 {
 int col = inputMatrix.getColumns();
 
-// Plus 1 for the bias at zero ??  ======
-inputLayer.setSize( col + 1 );
+// Plus 1 for the bias at zero.
+int layerSize = col + 1;
+
+inputLayer.setSize( layerSize );
 
 // The weights aren't used here.
 inputLayer.setWeightArSize( 1 );
 
-hiddenLayer.setSize( col );
-hiddenLayer.setWeightArSize( col );
+hiddenLayer.setSize( layerSize );
+hiddenLayer.setWeightArSize( layerSize );
 
-// The output at zero is the bias, so it is
-// one output at index 1.
-
+// One for the bias at zero, and one for
+// the yes or no answer makes two.
 outputLayer.setSize( 2 );
 
-outputLayer.setWeightArSize( col );
+outputLayer.setWeightArSize( layerSize );
 
-// testLabelAr.setSize( 2 );
 errorOutAr.setSize( 2 );
 }
 
@@ -134,35 +129,21 @@ outputLayer.setRandomWeights( maxWeight );
 
 
 
-
-private void setRandomInput()
+====
+private void setInputAt( int row )
 {
-// Set the input layer neurons (activation value)
-// to random values.
-// They might be a number representing the
-// index of a word in a dictionary, for
-// example.
-
-TimeEC seedTime = new TimeEC();
-seedTime.setToNow();
-// int seed = (int)seedTime.getTicks();
-int seed = (int)(seedTime.getIndex()
-                 & 0x7FFFFFFFF );
-
-// seed += randIndex;
-
-Random rand = new Random( seed );
+// Set the input layer neurons (activation
+// value) from data matrix.
 
 int max = inputLayer.getSize();
 
 // For the bias.
 inputLayer.setActivationAt( 0, 1.0F );
 
-// Random value between 0 and 100.
 for( int count = 1; count < max; count++ )
   {
-  inputLayer.setActivationAt( count,
-           (float)(rand.NextDouble() * 100 ));
+  float val = inputMatrix.getVal( row, count );
+  inputLayer.setActivationAt( count, val );
   }
 }
 
