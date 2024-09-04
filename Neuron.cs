@@ -56,7 +56,7 @@ private float activation = 0;
 // The weight from this neuron to each
 // neuron in the L - 1 layer.
 
-private FloatVec weightAr;
+private FloatVec weightVec;
 
 
 
@@ -69,13 +69,13 @@ private Neuron()
 internal Neuron( MainData useMainData )
 {
 mData = useMainData;
-weightAr = new FloatVec( mData );
+weightVec = new FloatVec( mData );
 }
 
 
-internal void setWeightArSize( int setTo )
+internal void setWeightVecSize( int setTo )
 {
-weightAr.setSize( setTo );
+weightVec.setSize( setTo );
 }
 
 
@@ -86,7 +86,7 @@ internal float calcZ( NeuronLayer prevLayer )
 // zero is the bias.  The input at index
 // zero should always be 1.
 
-int max = weightAr.getSize();
+int max = weightVec.getSize();
 if( max != prevLayer.getSize())
   {
   throw new Exception(
@@ -97,13 +97,15 @@ float z = 0;
 for( int count = 0; count < max; count++ )
   {
   z += prevLayer.getActivationAt( count ) *
-                   weightAr.getVal( count );
+                   weightVec.getVal( count );
   }
 
 zSum = z;
 
 return zSum;
 }
+
+
 
 
 internal float calcActivation()
@@ -150,14 +152,14 @@ activation = setTo;
 
 internal float getWeight( int where )
 {
-return weightAr.getVal( where );
+return weightVec.getVal( where );
 }
 
 
 
 internal void setWeight( int where, float setTo )
 {
-weightAr.setVal( where, setTo );
+weightVec.setVal( where, setTo );
 }
 
 
@@ -198,7 +200,7 @@ seed += randIndex;
 Random rand = new Random( seed );
 float halfWeight = maxWeight / 2;
 
-int max = weightAr.getSize();
+int max = weightVec.getSize();
 
 // Random value between 0 and maxWeight.
 // It is shifted down by half of max weight
@@ -214,7 +216,7 @@ for( int count = 0; count < max; count++ )
   // negative.
   weight -= halfWeight;
 
-  weightAr.setVal( count, weight );
+  weightVec.setVal( count, weight );
   }
 }
 

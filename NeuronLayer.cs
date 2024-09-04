@@ -90,7 +90,7 @@ internal void setWeightArSize( int setTo )
 
 int max = neuronAr.Length;
 for( int count = 0; count < max; count++ )
-  neuronAr[count].setWeightArSize( setTo );
+  neuronAr[count].setWeightVecSize( setTo );
 
 }
 

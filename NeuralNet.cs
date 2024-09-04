@@ -28,13 +28,10 @@ private MainData mData;
 private NeuronLayer inputLayer;
 private NeuronLayer hiddenLayer;
 private NeuronLayer outputLayer;
-private FloatVec errorOutAr;
+private FloatVec errorOutVec;
 private FloatMatrix inputMatrix;
+private FloatMatrix labelMatrix;
 
-// Each input vector is labeled to say what
-// it is.  What the network is supposed to
-// learn.
-private FloatVec testLabelVec;
 
 
 
@@ -45,36 +42,41 @@ private NeuralNet()
 
 
 internal NeuralNet( MainData useMainData,
-                    FloatMatrix useMatrix,
-                    FloatVec useLabelVec )
+                  FloatMatrix useMatrix,
+                  FloatMatrix useLabelMatrix )
 {
 mData = useMainData;
 inputMatrix = useMatrix;
-testLabelVec = useLabelVec;
+labelMatrix = useLabelMatrix;
 
 int last = inputMatrix.getLastAppend();
-if( testLabelVec.getSize() <= last )
+if( labelMatrix.getLastAppend() != last )
   {
   throw new Exception(
-                "testLabelVec too small." );
+          "labelMatrix doesn't match last." );
   }
 
 inputLayer = new NeuronLayer( mData );
 hiddenLayer = new NeuronLayer( mData );
 outputLayer = new NeuronLayer( mData );
-errorOutAr = new FloatVec( mData );
+errorOutVec = new FloatVec( mData );
 }
 
 
 
 internal void test()
 {
-mData.showStatus(
-          "This is the Neural Net test." );
+======
+mData.showStatus( "NeuralNet.test()." );
 
 setupNetTopology();
 
-// setRandomWeights();
+setRandomWeights( 10.0F );
+
+// ========
+// Loop through these...
+setInputRow( 0 );
+
 
 /*
 
@@ -87,7 +89,7 @@ setupNetTopology();
 forwardPass();
 */
 
-mData.showStatus( "Neural Net test finished." );
+mData.showStatus( "NeuralNet.test() end." );
 }
 
 
@@ -113,8 +115,9 @@ outputLayer.setSize( 2 );
 
 outputLayer.setWeightArSize( layerSize );
 
-errorOutAr.setSize( 2 );
+errorOutVec.setSize( 2 );
 }
+
 
 
 
@@ -129,15 +132,15 @@ outputLayer.setRandomWeights( maxWeight );
 
 
 
-====
-private void setInputAt( int row )
+
+private void setInputRow( int row )
 {
 // Set the input layer neurons (activation
 // value) from data matrix.
 
 int max = inputLayer.getSize();
 
-// For the bias.
+// The bias that isn't used in this row.
 inputLayer.setActivationAt( 0, 1.0F );
 
 for( int count = 1; count < max; count++ )
@@ -146,6 +149,7 @@ for( int count = 1; count < max; count++ )
   inputLayer.setActivationAt( count, val );
   }
 }
+
 
 
 
