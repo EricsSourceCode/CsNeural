@@ -158,15 +158,25 @@ for( int count = 0; count < max; count++ )
 
 
 
-internal void calcActivation()
+internal void calcActSigmoid()
 {
 int max = neuronAr.Length;
 for( int count = 0; count < max; count++ )
   {
-  neuronAr[count].calcActivation();
+  neuronAr[count].calcActSigmoid();
   }
 }
 
+
+
+internal void calcActReLU()
+{
+int max = neuronAr.Length;
+for( int count = 0; count < max; count++ )
+  {
+  neuronAr[count].calcActReLU();
+  }
+}
 
 
 

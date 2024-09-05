@@ -108,19 +108,35 @@ return zSum;
 
 
 
-internal float calcActivation()
+internal float calcActSigmoid()
 {
-// Pick an activation function to use.
+=====
+// The output is from zero to 1.
+// If zSum was very negative the output
+// would be zero.
 
-mData.showStatus( "zSum: " + zSum );
+// mData.showStatus( "zSum: " + zSum );
 
 activation = sigmoid( zSum );
-// activation = reLU( zSum );
 
-mData.showStatus( "activation: " + activation );
+// mData.showStatus( "activation: " + activation );
 
 return activation;
 }
+
+
+
+internal float calcActReLU()
+{
+// mData.showStatus( "zSum: " + zSum );
+
+activation = reLU( zSum );
+
+// mData.showStatus( "activation: " + activation );
+
+return activation;
+}
+
 
 
 
@@ -183,6 +199,23 @@ float a = (float)(1.0 / ( 1.0 +
 return a;
 }
 
+
+
+internal static float reLU( float z )
+{
+// ReLU f(x) = max( 0, x )
+
+if( z > 0 )
+  return z;
+
+return 0;
+
+// Derivivative of ReLU(x):
+//  if x>0:
+//    return 1
+//  else:
+//    return 0
+}
 
 
 

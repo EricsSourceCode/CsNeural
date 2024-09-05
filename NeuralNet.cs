@@ -66,28 +66,18 @@ errorOutVec = new FloatVec( mData );
 
 internal void test()
 {
-======
 mData.showStatus( "NeuralNet.test()." );
 
 setupNetTopology();
 
 setRandomWeights( 10.0F );
 
-// ========
 // Loop through these...
 setInputRow( 0 );
-
-
-/*
-
-// The neuron at zero is always the bias.
-// testLabelAr.setVal( 0, 0.0F );
-
-// Set the result to 1 for true.
-// testLabelAr.setVal( 1, 1.0F );
+// setLabelRow()  ??
 
 forwardPass();
-*/
+
 
 mData.showStatus( "NeuralNet.test() end." );
 }
@@ -138,33 +128,71 @@ private void setInputRow( int row )
 // Set the input layer neurons (activation
 // value) from data matrix.
 
-int max = inputLayer.getSize();
+int col = inputMatrix.getColumns();
+
+// Plus 1 for the bias at zero.
+int layerSize = col + 1;
+mData.showStatus( "InputLayer size: " + 
+                   layerSize );
+
+if( layerSize != inputLayer.getSize())
+  {
+  throw new Exception( 
+             "layerSize != inputLayer size." );
+  }
 
 // The bias that isn't used in this row.
 inputLayer.setActivationAt( 0, 1.0F );
 
-for( int count = 1; count < max; count++ )
+for( int count = 0; count < col; count++ )
   {
   float val = inputMatrix.getVal( row, count );
-  inputLayer.setActivationAt( count, val );
+  inputLayer.setActivationAt( count + 1, val );
   }
 }
 
+
+
+/*
+To match up with the errorVec?
+Or what?
+======
+private void setLabelRow( int row )
+{
+int col = labelMatrix.getColumns();
+
+// Plus 1 for the bias at zero.
+int layerSize = col + 1;
+mData.showStatus( "LabelMatrix layerSize: " + 
+                   layerSize );
+=======
+// The bias that isn't used in this row.
+inputLayer.setActivationAt( 0, 1.0F );
+
+for( int count = 0; count < col; count++ )
+  {
+  float val = inputMatrix.getVal( row, count );
+  inputLayer.setActivationAt( count + 1, val );
+  }
+}
+*/
 
 
 
 private void forwardPass()
 {
 hiddenLayer.calcZ( inputLayer );
-hiddenLayer.calcActivation();
+hiddenLayer.calcActReLU();
 
 outputLayer.calcZ( hiddenLayer );
-outputLayer.calcActivation();
+outputLayer.calcActSigmoid();
 
+
+/*
 // The value at zero is the bias.
 // So the one output is at index 1.
 float aOut = outputLayer.getActivationAt( 1 );
-/*
+
 float testOut = testLabelAr.getVal( 1 );
 
 float error = testOut - aOut;
