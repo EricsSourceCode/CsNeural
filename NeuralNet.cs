@@ -69,15 +69,13 @@ internal void test()
 mData.showStatus( "NeuralNet.test()." );
 
 setupNetTopology();
-
 setRandomWeights( 10.0F );
 
-// Loop through these...
-setInputRow( 0 );
-// setLabelRow()  ??
-
-forwardPass();
-
+for( int row = 0; row < 1; row++ )
+  {
+  setInputRow( row );
+  forwardPass( row );
+  }
 
 mData.showStatus( "NeuralNet.test() end." );
 }
@@ -99,13 +97,12 @@ inputLayer.setWeightArSize( 1 );
 hiddenLayer.setSize( layerSize );
 hiddenLayer.setWeightArSize( layerSize );
 
-// One for the bias at zero, and one for
-// the yes or no answer makes two.
-outputLayer.setSize( 2 );
+// One for the bias at zero, and two more.
+outputLayer.setSize( 3 ); 
 
 outputLayer.setWeightArSize( layerSize );
 
-errorOutVec.setSize( 2 );
+errorOutVec.setSize( 3 );
 }
 
 
@@ -132,12 +129,12 @@ int col = inputMatrix.getColumns();
 
 // Plus 1 for the bias at zero.
 int layerSize = col + 1;
-mData.showStatus( "InputLayer size: " + 
+mData.showStatus( "InputLayer size: " +
                    layerSize );
 
 if( layerSize != inputLayer.getSize())
   {
-  throw new Exception( 
+  throw new Exception(
              "layerSize != inputLayer size." );
   }
 
@@ -163,7 +160,7 @@ int col = labelMatrix.getColumns();
 
 // Plus 1 for the bias at zero.
 int layerSize = col + 1;
-mData.showStatus( "LabelMatrix layerSize: " + 
+mData.showStatus( "LabelMatrix layerSize: " +
                    layerSize );
 =======
 // The bias that isn't used in this row.
@@ -179,29 +176,38 @@ for( int count = 0; count < col; count++ )
 
 
 
-private void forwardPass()
+private void forwardPass( int row )
 {
+mData.showStatus( " " );
+mData.showStatus( "forwardPass(): " + row );
+
 hiddenLayer.calcZ( inputLayer );
 hiddenLayer.calcActReLU();
 
 outputLayer.calcZ( hiddenLayer );
 outputLayer.calcActSigmoid();
 
-
-/*
 // The value at zero is the bias.
-// So the one output is at index 1.
-float aOut = outputLayer.getActivationAt( 1 );
+float aOut1 = outputLayer.getActivationAt( 1 );
+float aOut2 = outputLayer.getActivationAt( 2 );
 
-float testOut = testLabelAr.getVal( 1 );
+mData.showStatus( "aOut1: " + aOut1 );
+mData.showStatus( "aOut2: " + aOut2 );
 
-float error = testOut - aOut;
-errorOutAr.setVal( 1, error );
+float label1 = labelMatrix.getVal( row, 1 );
+float label2 = labelMatrix.getVal( row, 2 );
 
-mData.showStatus( "aOut: " + aOut );
-mData.showStatus( "testOut: " + testOut );
-mData.showStatus( "error: " + error );
-*/
+mData.showStatus( "label1: " + label1 );
+mData.showStatus( "label2: " + label2 );
+
+float error1 = label1 - aOut1;
+float error2 = label2 - aOut2;
+
+mData.showStatus( "error1: " + error1 );
+mData.showStatus( "error2: " + error2 );
+
+errorOutVec.setVal( 1, error1 );
+errorOutVec.setVal( 2, error2 );
 }
 
 

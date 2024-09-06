@@ -93,6 +93,15 @@ if( max != prevLayer.getSize())
         "Neuron.calcZ() sizes not equal." );
   }
 
+// Starting at zero, so zSum includes the
+// bias value.
+if( prevLayer.getActivationAt( 0 ) < 0.999 )
+  {
+  throw new Exception(
+                   "Bias activation not 1." );
+  }
+
+
 float z = 0;
 for( int count = 0; count < max; count++ )
   {
@@ -101,7 +110,6 @@ for( int count = 0; count < max; count++ )
   }
 
 zSum = z;
-
 return zSum;
 }
 
@@ -110,12 +118,8 @@ return zSum;
 
 internal float calcActSigmoid()
 {
-=====
-// The output is from zero to 1.
-// If zSum was very negative the output
-// would be zero.
-
-// mData.showStatus( "zSum: " + zSum );
+// 1.0 / ( 1.0 + exp( -z ))
+// The output is from near zero to near 1.
 
 activation = sigmoid( zSum );
 
