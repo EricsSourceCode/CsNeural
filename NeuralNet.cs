@@ -69,7 +69,12 @@ internal void test()
 mData.showStatus( "NeuralNet.test()." );
 
 setupNetTopology();
-setRandomWeights( 10.0F );
+
+=====
+float randMax = 1.0F / inputLayer.getSize();
+mData.showStatus( "randMax: " + randMax );
+
+setRandomWeights( randMax );
 
 for( int row = 0; row < 1; row++ )
   {
@@ -98,7 +103,7 @@ hiddenLayer.setSize( layerSize );
 hiddenLayer.setWeightArSize( layerSize );
 
 // One for the bias at zero, and two more.
-outputLayer.setSize( 3 ); 
+outputLayer.setSize( 3 );
 
 outputLayer.setWeightArSize( layerSize );
 
