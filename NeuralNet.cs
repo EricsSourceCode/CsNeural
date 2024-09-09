@@ -70,7 +70,6 @@ mData.showStatus( "NeuralNet.test()." );
 
 setupNetTopology();
 
-=====
 float randMax = 1.0F / inputLayer.getSize();
 mData.showStatus( "randMax: " + randMax );
 
@@ -80,6 +79,7 @@ for( int row = 0; row < 1; row++ )
   {
   setInputRow( row );
   forwardPass( row );
+  backprop();
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -205,6 +205,13 @@ float label2 = labelMatrix.getVal( row, 2 );
 mData.showStatus( "label1: " + label1 );
 mData.showStatus( "label2: " + label2 );
 
+=====
+// The book shows y - y(hat) which is the
+// labeled error minus the y-out from
+// the network.
+// If the output value is less than the label
+// value then it is positive.  It is 
+// negative if it's more.
 float error1 = label1 - aOut1;
 float error2 = label2 - aOut2;
 
@@ -213,6 +220,21 @@ mData.showStatus( "error2: " + error2 );
 
 errorOutVec.setVal( 1, error1 );
 errorOutVec.setVal( 2, error2 );
+}
+
+
+
+private void backprop()
+{
+mData.showStatus( " " );
+mData.showStatus( "backprop(): " );
+
+=====
+// y - y(hat)
+float error1 = errorOutVec.getVal( 1 );
+
+
+mData.showStatus( "End of backprop()." );
 }
 
 
