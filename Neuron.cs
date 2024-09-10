@@ -190,9 +190,6 @@ internal static float sigmoid( float z )
 // Derivative:
 // (1.0 + exp( -z ))^-2  *  (e^-z)
 
-====
-float sqr = get the squared part...
-
 float a = (float)(1.0 / ( 1.0 +
                            MathF.exp( -z )));
 
@@ -200,7 +197,8 @@ return a;
 }
 
 
-=====
+
+/*
 internal static float derivSigmoid( float z )
 {
 // (1.0 + exp( -z ))^-2  *  (e^-z)
@@ -212,6 +210,7 @@ float a = (float)( (1.0 +
 
 return a;
 }
+*/
 
 
 
