@@ -28,9 +28,9 @@ private MainData mData;
 private NeuronLayer inputLayer;
 private NeuronLayer hiddenLayer;
 private NeuronLayer outputLayer;
-private FloatVec errorOutVec;
-private FloatMatrix inputMatrix;
-private FloatMatrix labelMatrix;
+private VectorFlt errorOutVec;
+private VectorArray inputMatrix;
+private VectorArray labelMatrix;
 
 
 
@@ -42,8 +42,8 @@ private NeuralNet()
 
 
 internal NeuralNet( MainData useMainData,
-                  FloatMatrix useMatrix,
-                  FloatMatrix useLabelMatrix )
+                  VectorArray useMatrix,
+                  VectorArray useLabelMatrix )
 {
 mData = useMainData;
 inputMatrix = useMatrix;
@@ -59,7 +59,7 @@ if( labelMatrix.getLastAppend() != last )
 inputLayer = new NeuronLayer( mData );
 hiddenLayer = new NeuronLayer( mData );
 outputLayer = new NeuronLayer( mData );
-errorOutVec = new FloatVec( mData );
+errorOutVec = new VectorFlt( mData );
 }
 
 
