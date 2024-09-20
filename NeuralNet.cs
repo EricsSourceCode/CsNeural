@@ -216,8 +216,8 @@ mData.showStatus( "label2: " + label2 );
 float error1 = label1 - aOut1;
 float error2 = label2 - aOut2;
 
-mData.showStatus( "error1: " + error1 );
-mData.showStatus( "error2: " + error2 );
+// mData.showStatus( "error1: " + error1 );
+// mData.showStatus( "error2: " + error2 );
 
 errorOutVec.setVal( 1, error1 );
 errorOutVec.setVal( 2, error2 );
@@ -230,11 +230,15 @@ private void backprop()
 mData.showStatus( " " );
 mData.showStatus( "backprop(): " );
 
-/*
 // y - y(hat)
 float error1 = errorOutVec.getVal( 1 );
-*/
+float error2 = errorOutVec.getVal( 2 );
+mData.showStatus( "error1: " + error1 );
+mData.showStatus( "error2: " + error2 );
 
+outputLayer.setDeltaAt( 1, error1 );
+outputLayer.setDeltaAt( 2, error2 );
+====
 mData.showStatus( "End of backprop()." );
 }
 

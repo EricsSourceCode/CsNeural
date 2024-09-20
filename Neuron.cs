@@ -149,6 +149,12 @@ return delta;
 }
 
 
+internal void setDelta( float setTo )
+{
+delta = setTo;
+}
+
+
 
 internal float getActivation()
 {
