@@ -227,6 +227,16 @@ errorOutVec.setVal( 2, error2 );
 
 private void backprop()
 {
+=====
+// Adjust weight for bias at index zero.
+
+// At each step you calculate the gradient
+// and make a small step.  Bigger error
+// means a bigger step.
+// error = d - y
+// d is desired output.  y is calc output.
+
+
 mData.showStatus( " " );
 mData.showStatus( "backprop(): " );
 
@@ -238,7 +248,7 @@ mData.showStatus( "error2: " + error2 );
 
 outputLayer.setDeltaAt( 1, error1 );
 outputLayer.setDeltaAt( 2, error2 );
-====
+
 mData.showStatus( "End of backprop()." );
 }
 
