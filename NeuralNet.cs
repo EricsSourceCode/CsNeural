@@ -167,7 +167,7 @@ int col = labelMatrix.getColumns();
 int layerSize = col + 1;
 mData.showStatus( "LabelMatrix layerSize: " +
                    layerSize );
-=======
+
 // The bias that isn't used in this row.
 inputLayer.setActivationAt( 0, 1.0F );
 
@@ -227,7 +227,6 @@ errorOutVec.setVal( 2, error2 );
 
 private void backprop()
 {
-=====
 // Adjust weight for bias at index zero.
 
 // At each step you calculate the gradient
@@ -246,8 +245,13 @@ float error2 = errorOutVec.getVal( 2 );
 mData.showStatus( "error1: " + error1 );
 mData.showStatus( "error2: " + error2 );
 
-outputLayer.setDeltaAt( 1, error1 );
-outputLayer.setDeltaAt( 2, error2 );
+
+ ====
+// What is the loss function?
+
+// outputLayer.setDeltaAt( 1, error1 );
+// outputLayer.setDeltaAt( 2, error2 );
+
 
 mData.showStatus( "End of backprop()." );
 }

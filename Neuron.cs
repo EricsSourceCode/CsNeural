@@ -204,19 +204,14 @@ return a;
 
 
 
-/*
 internal static float derivSigmoid( float z )
 {
-// (1.0 + exp( -z ))^-2  *  (e^-z)
+float sig = sigmoid( z );
+float result = sig * (1.0F - sig);
 
-float a = (float)( (1.0 +
-
-1.0 / ( 1.0 +
-                           MathF.exp( -z )));
-
-return a;
+return result;
 }
-*/
+
 
 
 
@@ -236,6 +231,20 @@ return 0;
 //    return 0
 }
 
+
+
+internal static float derivReLU( float z )
+{
+if( z > 0 )
+  return 1;
+
+return 0;
+}
+
+
+
+// Randomness breaks up symmetry so all of
+// the neurons/weights are not the same.
 
 
 internal void setRandomWeights( float maxWeight,
