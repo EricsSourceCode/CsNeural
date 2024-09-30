@@ -17,10 +17,6 @@ using System;
 
 
 
-// There is that old saying:
-// Make it work first, then make it work fast.
-
-
 
 public class NeuralNet1
 {
@@ -79,7 +75,7 @@ for( int row = 0; row < 1; row++ )
   {
   setInputRow( row );
   forwardPass( row );
-  backprop();
+  backprop( row );
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -191,6 +187,22 @@ hiddenLayer.calcActReLU();
 
 outputLayer.calcZ( hiddenLayer );
 outputLayer.calcActSigmoid();
+}
+
+
+
+private void backprop( int row )
+{
+mData.showStatus( " " );
+mData.showStatus( "Top of backprop()." );
+
+// This is done after each forward pass
+// using specific values of Activation
+// ZSum, etc.
+
+// What are the different ways a Cost
+// function could be done?  Sum of Squares
+// over all rows?
 
 // The value at zero is the bias.
 float aOut1 = outputLayer.getActivationAt( 1 );
@@ -205,52 +217,28 @@ float label2 = labelMatrix.getVal( row, 2 );
 mData.showStatus( "label1: " + label1 );
 mData.showStatus( "label2: " + label2 );
 
-// If the output value is less than the label
-// value then it is positive.  Meaning the
-// weights have to be adjusted up.
-// If the output value is more than the
-// label value then it is negative, so
-// the weights have to be adjusted down.
-// (Adding a negative number.)
+// delta is dError / dZ.
+// Which is (dError / dA) * (dA / dZ)
+// That is the Chain Rule for those
+// derivatives.
 
-float error1 = label1 - aOut1;
-float error2 = label2 - aOut2;
+// This is one of many ways to do a Cost
+// function.  This _defines_ a rate of
+// change for the error.
+float dErrorA1 = label1 - aOut1;
+float dErrorA2 = label2 - aOut2;
 
-// mData.showStatus( "error1: " + error1 );
-// mData.showStatus( "error2: " + error2 );
+float z1 = outputLayer.getZSumAt( 1 );
+float z2 = outputLayer.getZSumAt( 2 );
 
-errorOutVec.setVal( 1, error1 );
-errorOutVec.setVal( 2, error2 );
-}
+float delta1 = dErrorA1 * 
+                 Activation.derivSigmoid( z1 );
+float delta2 = dErrorA2 * 
+                 Activation.derivSigmoid( z2 );
 
-
-
-private void backprop()
-{
-// Adjust weight for bias at index zero.
-
-// At each step you calculate the gradient
-// and make a small step.  Bigger error
-// means a bigger step.
-// error = d - y
-// d is desired output.  y is calc output.
-
-
-mData.showStatus( " " );
-mData.showStatus( "backprop(): " );
-
-// y - y(hat)
-float error1 = errorOutVec.getVal( 1 );
-float error2 = errorOutVec.getVal( 2 );
-mData.showStatus( "error1: " + error1 );
-mData.showStatus( "error2: " + error2 );
-
-
-// ==== Cost function.
-
-
-// outputLayer.setDeltaAt( 1, error1 );
-// outputLayer.setDeltaAt( 2, error2 );
+=== So far so good?  Or what?
+outputLayer.setDeltaAt( 1, delta1 );
+outputLayer.setDeltaAt( 2, delta2 );
 
 
 mData.showStatus( "End of backprop()." );

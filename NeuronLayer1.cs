@@ -135,6 +135,17 @@ neuronAr[where].setActivation( setTo );
 
 
 
+internal float getZSumAt( int where )
+{
+int max = neuronAr.Length;
+RangeT.test( where, 0, max - 1,
+          "NeuronLayer.getZSumAt() range." );
+
+return neuronAr[where].getZSum();
+}
+
+
+
 internal void setRandomWeights( float maxWeight )
 {
 int max = neuronAr.Length;
