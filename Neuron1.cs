@@ -59,6 +59,13 @@ weightVec.setSize( setTo );
 
 
 
+internal int getWeightVecSize()
+{
+return weightVec.getSize();
+}
+
+
+
 internal float calcZ( NeuronLayer1 prevLayer )
 {
 // By convention, the weight at index

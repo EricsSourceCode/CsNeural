@@ -200,10 +200,19 @@ mData.showStatus( "Top of backprop()." );
 // using specific values of Activation
 // ZSum, etc.
 
-// What are the different ways a Cost
-// function could be done?  Sum of Squares
-// over all rows?
+setDeltaAtOutput( row );
+setDeltaAtHidden( outputLayer,
+                  hiddenLayer, row );
 
+
+
+mData.showStatus( "End of backprop()." );
+}
+
+
+
+private void setDeltaAtOutput( int row )
+{
 // The value at zero is the bias.
 float aOut1 = outputLayer.getActivationAt( 1 );
 float aOut2 = outputLayer.getActivationAt( 2 );
@@ -222,26 +231,111 @@ mData.showStatus( "label2: " + label2 );
 // That is the Chain Rule for those
 // derivatives.
 
+// What are the different ways a Cost
+// function could be done?  Sum of Squares...?
+
 // This is one of many ways to do a Cost
 // function.  This _defines_ a rate of
-// change for the error.
+// change for the error.  In this case,
+// the bigger the error, the bigger the
+// rate of change for the weights.
+
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
 
-float delta1 = dErrorA1 * 
+float delta1 = dErrorA1 *
                  Activation.derivSigmoid( z1 );
-float delta2 = dErrorA2 * 
+float delta2 = dErrorA2 *
                  Activation.derivSigmoid( z2 );
 
-=== So far so good?  Or what?
+mData.showStatus( "delta1: " + delta1 );
+mData.showStatus( "delta2: " + delta2 );
+
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
+}
 
 
-mData.showStatus( "End of backprop()." );
+
+private void setDeltaAtHidden( 
+                      NeuronLayer1 fromLayer,
+                      NeuronLayer1 toSetLayer,
+                      int row )
+{
+int maxToSet = toSetLayer.getSize();
+int maxFrom = fromLayer.getSize();
+
+for( int countToSet = 0;
+           countToSet < maxToSet; countToSet++ )
+  {
+  // Calculate the delta for this neuron
+  mData.showStatus( " " );
+  mData.showStatus( "countToSet: " +
+                            countToSet );
+
+==== countFrom at zero is the bias.
+I don't want the delta from that one.
+And countToSet too?
+
+
+  for( int countFrom = 0;
+           countFrom < maxFrom; countFrom++ )
+    {
+    mData.showStatus( "  countFrom: " +
+                                  countFrom );
+    // What is the weight between the neuron
+    // at countToSet and countFrom?
+
+    float weight = fromLayer.getWeight(
+                       countFrom, countToSet );
+
+    mData.showStatus( "  weight: " + weight );
+
+    }
+  }
+
+
+/*
+// The value at zero is the bias.
+float aOut1 = outputLayer.getActivationAt( 1 );
+float aOut2 = outputLayer.getActivationAt( 2 );
+
+mData.showStatus( "aOut1: " + aOut1 );
+mData.showStatus( "aOut2: " + aOut2 );
+
+float label1 = labelMatrix.getVal( row, 1 );
+float label2 = labelMatrix.getVal( row, 2 );
+
+mData.showStatus( "label1: " + label1 );
+mData.showStatus( "label2: " + label2 );
+
+
+float dErrorA1 = 
+float dErrorA2 = 
+
+
+
+float z1 = outputLayer.getZSumAt( 1 );
+float z2 = outputLayer.getZSumAt( 2 );
+
+float delta1 = dErrorA1 *
+==== derivReLU() at the hidden layer?  Or what?
+Activation.derivReLU( ) ?
+Activation.derivSigmoid( z1 );
+
+
+float delta2 = dErrorA2 *
+                 Activation.derivSigmoid( z2 );
+
+mData.showStatus( "delta1: " + delta1 );
+mData.showStatus( "delta2: " + delta2 );
+
+outputLayer.setDeltaAt( 1, delta1 );
+outputLayer.setDeltaAt( 2, delta2 );
+*/
 }
 
 

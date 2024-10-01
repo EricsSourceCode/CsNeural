@@ -205,6 +205,22 @@ neuronAr[where].setDelta( setTo );
 }
 
 
+internal float getWeight( int neuron, int where )
+{
+int max = neuronAr.Length;
+RangeT.test( neuron, 0, max - 1,
+    "NeuronLayer.getWeight() neuron range." );
+
+int weightSize = neuronAr[neuron].
+                        getWeightVecSize();
+RangeT.test( where, 0, weightSize - 1,
+     "NeuronLayer.getWeight() where range." );
+
+return neuronAr[neuron].getWeight( where );
+}
+
+
+
 
 
 } // Class
