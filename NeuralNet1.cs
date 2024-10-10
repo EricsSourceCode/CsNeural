@@ -232,13 +232,7 @@ mData.showStatus( "label2: " + label2 );
 // derivatives.
 
 // What are the different ways a Cost
-// function could be done?  Sum of Squares...?
-
-// This is one of many ways to do a Cost
-// function.  This _defines_ a rate of
-// change for the error.  In this case,
-// the bigger the error, the bigger the
-// rate of change for the weights.
+// function could be done?
 
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
@@ -260,7 +254,8 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 
 
-private void setDeltaAtHidden( 
+
+private void setDeltaAtHidden(
                       NeuronLayer1 fromLayer,
                       NeuronLayer1 toSetLayer,
                       int row )
@@ -268,75 +263,52 @@ private void setDeltaAtHidden(
 int maxToSet = toSetLayer.getSize();
 int maxFrom = fromLayer.getSize();
 
-for( int countToSet = 0;
-           countToSet < maxToSet; countToSet++ )
+// Start counting at 1 because the bias
+// is the only thing at zero.
+for( int weightAt = 1;
+           weightAt < maxToSet; weightAt++ )
   {
-  // Calculate the delta for this neuron
   mData.showStatus( " " );
-  mData.showStatus( "countToSet: " +
-                            countToSet );
+  mData.showStatus( "weightAt: " + weightAt );
 
-==== countFrom at zero is the bias.
-I don't want the delta from that one.
-And countToSet too?
+  float sumToSet = 0;
 
-
-  for( int countFrom = 0;
-           countFrom < maxFrom; countFrom++ )
+  for( int fromNeuron = 1;
+           fromNeuron < maxFrom; fromNeuron++ )
     {
-    mData.showStatus( "  countFrom: " +
-                                  countFrom );
-    // What is the weight between the neuron
-    // at countToSet and countFrom?
+    mData.showStatus( "  fromNeuron: " +
+                                fromNeuron );
+
+    float deltaFrom = fromLayer.getDeltaAt(
+                                  fromNeuron );
+
+    mData.showStatus( "  deltaFrom: " +
+                                  deltaFrom );
+
+    // What is the weight between these
+    // two neurons?
+    // Here is a Matrix.  Row and column.
 
     float weight = fromLayer.getWeight(
-                       countFrom, countToSet );
+                       fromNeuron, weightAt );
 
     mData.showStatus( "  weight: " + weight );
 
+    // If weight and deltaFrom were both
+    // negative then sumToSet would have a
+    // positive number added to it.  And
+    // other +/- variations like that.
+
+    sumToSet += weight * deltaFrom;
     }
+
+  // Set the delta for the neuron in the
+  // toSetLayer.
+  toSetLayer.setDeltaAt( weightAt, sumToSet );
+  mData.showStatus( "To set delta: " + sumToSet );
   }
-
-
-/*
-// The value at zero is the bias.
-float aOut1 = outputLayer.getActivationAt( 1 );
-float aOut2 = outputLayer.getActivationAt( 2 );
-
-mData.showStatus( "aOut1: " + aOut1 );
-mData.showStatus( "aOut2: " + aOut2 );
-
-float label1 = labelMatrix.getVal( row, 1 );
-float label2 = labelMatrix.getVal( row, 2 );
-
-mData.showStatus( "label1: " + label1 );
-mData.showStatus( "label2: " + label2 );
-
-
-float dErrorA1 = 
-float dErrorA2 = 
-
-
-
-float z1 = outputLayer.getZSumAt( 1 );
-float z2 = outputLayer.getZSumAt( 2 );
-
-float delta1 = dErrorA1 *
-==== derivReLU() at the hidden layer?  Or what?
-Activation.derivReLU( ) ?
-Activation.derivSigmoid( z1 );
-
-
-float delta2 = dErrorA2 *
-                 Activation.derivSigmoid( z2 );
-
-mData.showStatus( "delta1: " + delta1 );
-mData.showStatus( "delta2: " + delta2 );
-
-outputLayer.setDeltaAt( 1, delta1 );
-outputLayer.setDeltaAt( 2, delta2 );
-*/
 }
+
 
 
 

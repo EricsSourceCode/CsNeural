@@ -191,12 +191,24 @@ for( int count = 0; count < max; count++ )
 
 
 
+internal float getDeltaAt( int where )
+{
+// By convention, it is the bias
+// if where == 0.  So check the range
+// starting at 1.
+
+int max = neuronAr.Length;
+RangeT.test( where, 1, max - 1,
+       "NeuronLayer.setDeltaAt() range." );
+
+return neuronAr[where].getDelta();
+}
+
+
+
 internal void setDeltaAt( int where,
                           float setTo )
 {
-// By convention, it is the bias.
-// if( where == 0 )
-
 int max = neuronAr.Length;
 RangeT.test( where, 1, max - 1,
        "NeuronLayer.setDeltaAt() range." );
