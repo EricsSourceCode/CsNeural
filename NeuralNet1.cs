@@ -299,7 +299,17 @@ for( int weightAt = 1;
     // positive number added to it.  And
     // other +/- variations like that.
 
-    sumToSet += weight * deltaFrom;
+    // This is the z from the neuron I 
+    // am about to set.
+    float z = toSetLayer.getZSumAt( weightAt );
+
+    // It is the ReLU derivative because it
+    // is the z on the hidden layer.
+ 
+    float partSum = (weight * deltaFrom) *
+                  Activation.derivReLU( z );
+
+    sumToSet += partSum;
     }
 
   // Set the delta for the neuron in the
