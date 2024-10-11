@@ -76,6 +76,8 @@ for( int row = 0; row < 1; row++ )
   setInputRow( row );
   forwardPass( row );
   backprop( row );
+  adjustWeightsAt( outputLayer );
+  adjustWeightsAt( hiddenLayer );
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -242,12 +244,23 @@ mData.showStatus( "label2: " + label2 );
 // the gradient vector.  To go downhill.
 
 // But the book shows it like this:
-
+// dError / dA = dErrorA1
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
+
+
+/////////
+// Test:
+float dSigmoid = Activation.derivSigmoid( z1 );
+// The value of deriveSigmoid() can be
+// between 0 and 0.25.  A small number.
+if( (dSigmoid < 0) || (dSigmoid > 0.25))
+  throw new Exception( "dSigmoid range." ); 
+///////////
+
 
 float delta1 = dErrorA1 *
                  Activation.derivSigmoid( z1 );
@@ -315,9 +328,11 @@ for( int weightAt = 1;
     // am about to set.
     float z = toSetLayer.getZSumAt( weightAt );
 
-    // It is the ReLU derivative because it
-    // is the z on the hidden layer.
-    // If z was negative then derivReLu
+    // If z <= 0 then the output from this
+    // neuron activation would be zero.
+    // So it would have nothing to do
+    // with the output.
+    // If z was <= 0 then derivReLu
     // would be zero.  So partSum would
     // be zero.
 
@@ -338,6 +353,24 @@ for( int weightAt = 1;
   mData.showStatus( "To set delta: " + sumToSet );
   }
 }
+
+
+
+
+private void adjustWeightsAt(
+                    NeuronLayer1 layer )
+{
+int max = toSetLayer.getSize();
+
+for( int count = 0; count < max; count++ )
+  {
+  // dError / dW = activation * delta
+  float act = layer.getActivationAt( count );
+  float delta = layer.getDeltaAt( count );
+  float adjust = delta * act;
+=====
+  }
+} 
 
 
 
