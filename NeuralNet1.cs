@@ -234,6 +234,15 @@ mData.showStatus( "label2: " + label2 );
 // What are the different ways a Cost
 // function could be done?
 
+// The sign of the error makes it so that
+// you change the weights in the right
+// direction.  To make the errors smaller.
+// The tutorial shows this as: aOut1 - label1
+// The tutorial is showing the negative of
+// the gradient vector.  To go downhill.
+
+// But the book shows it like this:
+
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
@@ -268,6 +277,9 @@ int maxFrom = fromLayer.getSize();
 for( int weightAt = 1;
            weightAt < maxToSet; weightAt++ )
   {
+  // weightAt is also the index of the neuron
+  // in the layer that is about to be set.
+
   mData.showStatus( " " );
   mData.showStatus( "weightAt: " + weightAt );
 
@@ -299,13 +311,21 @@ for( int weightAt = 1;
     // positive number added to it.  And
     // other +/- variations like that.
 
-    // This is the z from the neuron I 
+    // This is the z from the neuron I
     // am about to set.
     float z = toSetLayer.getZSumAt( weightAt );
 
     // It is the ReLU derivative because it
     // is the z on the hidden layer.
- 
+    // If z was negative then derivReLu
+    // would be zero.  So partSum would
+    // be zero.
+
+    // This would be a Hadamard Product for
+    // the vectors:
+    // result.hadamard( weight, deltaFrom ).
+    // Then add the vector for ReLU( z ).
+
     float partSum = (weight * deltaFrom) *
                   Activation.derivReLU( z );
 
