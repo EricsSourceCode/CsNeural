@@ -16,7 +16,7 @@ using System;
 
 
 // The weight at index 0 is the standard way
-// of doing the bias.  The input is fixed
+// of doing the bias.  The activation is fixed
 // at 1 and the weight makes the bias value.
 
 
@@ -68,10 +68,6 @@ return weightVec.getSize();
 
 internal float calcZ( NeuronLayer1 prevLayer )
 {
-// By convention, the weight at index
-// zero is the bias.  The input at index
-// zero should always be 1.
-
 int max = weightVec.getSize();
 if( max != prevLayer.getSize())
   {
@@ -79,17 +75,11 @@ if( max != prevLayer.getSize())
         "Neuron.calcZ() sizes not equal." );
   }
 
-// Starting at zero, so zSum includes the
-// bias value.
-if( prevLayer.getActivationAt( 0 ) < 0.999 )
-  {
-  throw new Exception(
-                   "Bias activation not 1." );
-  }
+// Start with the bias value at zero.
+float z = weightVec.getVal( 0 );
 
-
-float z = 0;
-for( int count = 0; count < max; count++ )
+// Starting past the bias at 1.
+for( int count = 1; count < max; count++ )
   {
   z += prevLayer.getActivationAt( count ) *
                    weightVec.getVal( count );
@@ -111,12 +101,7 @@ return activation;
 
 internal float calcActReLU()
 {
-// mData.showStatus( "zSum: " + zSum );
-
 activation = Activation.reLU( zSum );
-
-// mData.showStatus( "activation: " + activation );
-
 return activation;
 }
 
@@ -154,9 +139,24 @@ activation = setTo;
 }
 
 
+internal float getBias()
+{
+return weightVec.getVal( 0 );
+}
+
+
+internal void setBias( float setTo )
+{
+weightVec.setVal( 0, setTo );
+}
+
 
 internal float getWeight( int where )
 {
+int max = weightVec.getSize();
+RangeT.test( where, 1, max - 1,
+       "Neuron.getWeight() range." );
+
 return weightVec.getVal( where );
 }
 
@@ -164,6 +164,10 @@ return weightVec.getVal( where );
 
 internal void setWeight( int where, float setTo )
 {
+int max = weightVec.getSize();
+RangeT.test( where, 1, max - 1,
+       "Neuron.setWeight() range." );
+
 weightVec.setVal( where, setTo );
 }
 
@@ -193,6 +197,10 @@ int max = weightVec.getSize();
 // It is shifted down by half of max weight
 // so that the range is -50 to 50 if the
 // max weight is 100.
+
+// This sets a random bias at zero too.
+
+// Starting at zero to set the bias too.
 
 for( int count = 0; count < max; count++ )
   {

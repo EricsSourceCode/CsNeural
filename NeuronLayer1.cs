@@ -17,6 +17,16 @@ using System;
 
 
 
+// By convention, the weight at index
+// zero is the bias.  And so neurons
+// start at index 1 in order to match
+// up with those weights.  And so later
+// math optimizations (like GPU math)
+// matches up indexes.
+// The neuron at index 0 is not used.
+
+
+
 public class NeuronLayer1
 {
 private MainData mData;
@@ -89,7 +99,10 @@ internal void setWeightArSize( int setTo )
 // previous layer.
 
 int max = neuronAr.Length;
-for( int count = 0; count < max; count++ )
+
+// There is no neuron at zero.
+// Starting at index 1.
+for( int count = 1; count < max; count++ )
   neuronAr[count].setWeightVecSize( setTo );
 
 }
@@ -98,17 +111,8 @@ for( int count = 0; count < max; count++ )
 
 internal float getActivationAt( int where )
 {
-// By convention, index zero is for the
-// bias, so this should always return 1 for
-// the Activation at index 0.
-
-// Is that true of every layer?
-
-if( where == 0 )
-  return 1;
-
 int max = neuronAr.Length;
-RangeT.test( where, 0, max - 1,
+RangeT.test( where, 1, max - 1,
        "NeuronLayer.getActivationAt() range." );
 
 return neuronAr[where].getActivation();
@@ -119,15 +123,8 @@ return neuronAr[where].getActivation();
 internal void setActivationAt( int where,
                                float setTo )
 {
-// By convention, it is the bias.
-if( where == 0 )
-  {
-  neuronAr[where].setActivation( 1.0F );
-  return;
-  }
-
 int max = neuronAr.Length;
-RangeT.test( where, 0, max - 1,
+RangeT.test( where, 1, max - 1,
        "NeuronLayer.setActivationAt() range." );
 
 neuronAr[where].setActivation( setTo );
@@ -138,7 +135,7 @@ neuronAr[where].setActivation( setTo );
 internal float getZSumAt( int where )
 {
 int max = neuronAr.Length;
-RangeT.test( where, 0, max - 1,
+RangeT.test( where, 1, max - 1,
           "NeuronLayer.getZSumAt() range." );
 
 return neuronAr[where].getZSum();
@@ -149,7 +146,7 @@ return neuronAr[where].getZSum();
 internal void setRandomWeights( float maxWeight )
 {
 int max = neuronAr.Length;
-for( int count = 0; count < max; count++ )
+for( int count = 1; count < max; count++ )
   {
   neuronAr[count].setRandomWeights(
                     maxWeight, count );
@@ -161,7 +158,7 @@ for( int count = 0; count < max; count++ )
 internal void calcZ( NeuronLayer1 prevLayer )
 {
 int max = neuronAr.Length;
-for( int count = 0; count < max; count++ )
+for( int count = 1; count < max; count++ )
   {
   neuronAr[count].calcZ( prevLayer );
   }
@@ -172,7 +169,7 @@ for( int count = 0; count < max; count++ )
 internal void calcActSigmoid()
 {
 int max = neuronAr.Length;
-for( int count = 0; count < max; count++ )
+for( int count = 1; count < max; count++ )
   {
   neuronAr[count].calcActSigmoid();
   }
@@ -183,7 +180,7 @@ for( int count = 0; count < max; count++ )
 internal void calcActReLU()
 {
 int max = neuronAr.Length;
-for( int count = 0; count < max; count++ )
+for( int count = 1; count < max; count++ )
   {
   neuronAr[count].calcActReLU();
   }
@@ -199,7 +196,7 @@ internal float getDeltaAt( int where )
 
 int max = neuronAr.Length;
 RangeT.test( where, 1, max - 1,
-       "NeuronLayer.setDeltaAt() range." );
+       "NeuronLayer.getDeltaAt() range." );
 
 return neuronAr[where].getDelta();
 }
@@ -217,20 +214,59 @@ neuronAr[where].setDelta( setTo );
 }
 
 
+
+internal float getBias( int neuron )
+{
+int max = neuronAr.Length;
+RangeT.test( neuron, 1, max - 1,
+    "NeuronLayer.getBias() neuron range." );
+
+return neuronAr[neuron].getBias();
+}
+
+
+
+internal void setBias( int neuron, float setTo )
+{
+int max = neuronAr.Length;
+RangeT.test( neuron, 1, max - 1,
+    "NeuronLayer.setBias() neuron range." );
+
+neuronAr[neuron].setBias( setTo );
+}
+
+
+
 internal float getWeight( int neuron, int where )
 {
 int max = neuronAr.Length;
-RangeT.test( neuron, 0, max - 1,
+RangeT.test( neuron, 1, max - 1,
     "NeuronLayer.getWeight() neuron range." );
 
 int weightSize = neuronAr[neuron].
                         getWeightVecSize();
-RangeT.test( where, 0, weightSize - 1,
+RangeT.test( where, 1, weightSize - 1,
      "NeuronLayer.getWeight() where range." );
 
 return neuronAr[neuron].getWeight( where );
 }
 
+
+
+internal void setWeight( int neuron, int where,
+                                     float setTo )
+{
+int max = neuronAr.Length;
+RangeT.test( neuron, 1, max - 1,
+    "NeuronLayer.setWeight() neuron range." );
+
+int weightSize = neuronAr[neuron].
+                        getWeightVecSize();
+RangeT.test( where, 1, weightSize - 1,
+     "NeuronLayer.setWeight() where range." );
+
+neuronAr[neuron].setWeight( where, setTo );
+}
 
 
 

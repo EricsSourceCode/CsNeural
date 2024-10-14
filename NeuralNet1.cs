@@ -76,8 +76,11 @@ for( int row = 0; row < 1; row++ )
   setInputRow( row );
   forwardPass( row );
   backprop( row );
-  adjustWeightsAt( outputLayer );
-  adjustWeightsAt( hiddenLayer );
+
+  // adjustBiasAt( NeuronLayer1 layer );
+
+  // adjustWeightsAt( outputLayer );
+  // adjustWeightsAt( hiddenLayer );
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -140,9 +143,6 @@ if( layerSize != inputLayer.getSize())
   throw new Exception(
              "layerSize != inputLayer size." );
   }
-
-// The bias that isn't used in this row.
-inputLayer.setActivationAt( 0, 1.0F );
 
 for( int count = 0; count < col; count++ )
   {
@@ -258,7 +258,7 @@ float dSigmoid = Activation.derivSigmoid( z1 );
 // The value of deriveSigmoid() can be
 // between 0 and 0.25.  A small number.
 if( (dSigmoid < 0) || (dSigmoid > 0.25))
-  throw new Exception( "dSigmoid range." ); 
+  throw new Exception( "dSigmoid range." );
 ///////////
 
 
@@ -356,11 +356,48 @@ for( int weightAt = 1;
 
 
 
-
-private void adjustWeightsAt(
-                    NeuronLayer1 layer )
+private void adjustBias( NeuronLayer1 layer )
 {
-int max = toSetLayer.getSize();
+// dCost / dBias = delta
+
+// This could be a parameter.  Different layers
+// might have different step sizes.
+
+/*
+float stepSize = 0.1F;
+
+int max = layer.getSize();
+
+for( int count = 0; count < max; count++ )
+  {
+  // dError / dW = activation * delta
+  float act = layer.getActivationAt( count );
+  float delta = layer.getDeltaAt( count );
+
+// float bias = layer.getWeight( int neuron, int where )
+
+  }
+*/
+}
+
+
+
+
+/*
+private void adjustWeightsAt(
+                    NeuronLayer1 fromLayer )
+                    NeuronLayer1 toSetLayer )
+{
+// dError / dW = activation * delta
+
+// This could be a parameter.  Different layers
+// might have different step sizes.
+
+float stepSize = 0.1;
+
+int max = layer.getSize();
+
+======= Starting at 0 =======
 
 for( int count = 0; count < max; count++ )
   {
@@ -369,9 +406,11 @@ for( int count = 0; count < max; count++ )
   float delta = layer.getDeltaAt( count );
   float adjust = delta * act;
 =====
-  }
-} 
+Weight += stepSize * delta * activation.
 
+  }
+}
+*/
 
 
 
