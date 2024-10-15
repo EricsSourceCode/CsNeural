@@ -207,8 +207,6 @@ for( int count = 0; count < max; count++ )
   float weight = (float)(rand.NextDouble() *
                                   maxWeight );
 
-  // About half of the weights will be
-  // negative.
   weight -= halfWeight;
 
   weightVec.setVal( count, weight );
