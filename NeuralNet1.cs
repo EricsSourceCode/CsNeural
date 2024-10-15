@@ -71,16 +71,30 @@ mData.showStatus( "randMax: " + randMax );
 
 setRandomWeights( randMax );
 
-for( int row = 0; row < 1; row++ )
+// Different layers might have different
+// step sizes.
+
+float stepSize = 0.01F;
+
+// An epoch is one complete pass through
+// the entire training set.
+
+int epoch = 2;
+for( int count = 0; count < epoch; count++ )
   {
-  setInputRow( row );
-  forwardPass( row );
-  backprop( row );
+  for( int row = 0; row < 1; row++ )
+    {
+    setInputRow( row );
+    forwardPass( row );
+    backprop( row );
 
-  // adjustBiasAt( NeuronLayer1 layer );
+    adjustBias( outputLayer, stepSize );
 
-  // adjustWeightsAt( outputLayer );
-  // adjustWeightsAt( hiddenLayer );
+    adjustWeights( hiddenLayer, // fromLayer
+                   outputLayer, // toSetLayer
+                   stepSize );
+
+    }
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -248,6 +262,12 @@ mData.showStatus( "label2: " + label2 );
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
+mData.showStatus( "dErrorA1: " + 
+                  dErrorA1.ToString( "N4" ));
+mData.showStatus( "dErrorA2: " + 
+                  dErrorA2.ToString( "N4" ));
+
+
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
 
@@ -267,8 +287,10 @@ float delta1 = dErrorA1 *
 float delta2 = dErrorA2 *
                  Activation.derivSigmoid( z2 );
 
-mData.showStatus( "delta1: " + delta1 );
-mData.showStatus( "delta2: " + delta2 );
+mData.showStatus( "delta1: " + 
+                 delta1.ToString( "N4" ) );
+mData.showStatus( "delta2: " + 
+                 delta2.ToString( "N4" ) );
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
@@ -308,7 +330,7 @@ for( int weightAt = 1;
                                   fromNeuron );
 
     mData.showStatus( "  deltaFrom: " +
-                                  deltaFrom );
+                    deltaFrom.ToString( "N4" ) );
 
     // What is the weight between these
     // two neurons?
@@ -317,7 +339,8 @@ for( int weightAt = 1;
     float weight = fromLayer.getWeight(
                        fromNeuron, weightAt );
 
-    mData.showStatus( "  weight: " + weight );
+    mData.showStatus( "  weight: " + 
+                     weight.ToString( "N4" ) );
 
     // If weight and deltaFrom were both
     // negative then sumToSet would have a
@@ -350,67 +373,71 @@ for( int weightAt = 1;
   // Set the delta for the neuron in the
   // toSetLayer.
   toSetLayer.setDeltaAt( weightAt, sumToSet );
-  mData.showStatus( "To set delta: " + sumToSet );
+  mData.showStatus( "To set delta: " + 
+                  sumToSet.ToString( "N4" ) );
   }
 }
 
 
 
-private void adjustBias( NeuronLayer1 layer )
+private void adjustBias( NeuronLayer1 layer,
+                         float stepSize )
 {
 // dCost / dBias = delta
 
-// This could be a parameter.  Different layers
-// might have different step sizes.
-
-/*
-float stepSize = 0.1F;
-
 int max = layer.getSize();
 
-for( int count = 0; count < max; count++ )
+for( int count = 1; count < max; count++ )
   {
-  // dError / dW = activation * delta
-  float act = layer.getActivationAt( count );
   float delta = layer.getDeltaAt( count );
+  float bias = layer.getBias( count );
+  float biasAdj = delta * stepSize;
+  mData.showStatus( "biasAdj: " + 
+                   biasAdj.ToString( "N4" ));
 
-// float bias = layer.getWeight( int neuron, int where )
+  bias += biasAdj;
 
+  layer.setBias( count, bias );
   }
-*/
 }
 
 
 
 
-/*
-private void adjustWeightsAt(
-                    NeuronLayer1 fromLayer )
-                    NeuronLayer1 toSetLayer )
+private void adjustWeights(
+                    NeuronLayer1 fromLayer,
+                    NeuronLayer1 toSetLayer,
+                    float stepSize )
 {
 // dError / dW = activation * delta
 
-// This could be a parameter.  Different layers
-// might have different step sizes.
+int maxFrom = fromLayer.getSize();
+int maxToSet = toSetLayer.getSize();
 
-float stepSize = 0.1;
-
-int max = layer.getSize();
-
-======= Starting at 0 =======
-
-for( int count = 0; count < max; count++ )
+for( int countFrom = 1; countFrom < maxFrom; 
+                        countFrom++ )
   {
-  // dError / dW = activation * delta
-  float act = layer.getActivationAt( count );
-  float delta = layer.getDeltaAt( count );
-  float adjust = delta * act;
-=====
-Weight += stepSize * delta * activation.
+  float act = fromLayer.
+               getActivationAt( countFrom );
+  for( int countToSet = 1;
+            countToSet < maxToSet; countToSet++ )
+    {
+    float delta = toSetLayer.getDeltaAt( 
+                                 countToSet );
+    float weight = toSetLayer.getWeight(
+                 countToSet, countFrom );
 
+    float wAdjust = stepSize * delta * act;
+    mData.showStatus( "wAdjust: " + 
+                      wAdjust.ToString( "N4" ));
+
+    weight += wAdjust;
+    toSetLayer.setWeight( countToSet, countFrom,
+                          weight );
+    }
   }
 }
-*/
+
 
 
 
