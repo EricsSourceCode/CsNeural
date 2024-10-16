@@ -67,7 +67,14 @@ mData.showStatus( "NeuralNet1.test()." );
 setupNetTopology();
 
 float randMax = 1.0F / inputLayer.getSize();
-mData.showStatus( "randMax: " + randMax );
+
+// A byte could have a value up to 255.
+// But most letters are 97 'a' to 122 'z'.
+
+randMax = randMax / 100.0F;
+
+mData.showStatus( "randMax: " +
+                    randMax.ToString( "N8" ));
 
 setRandomWeights( randMax );
 
@@ -86,7 +93,7 @@ for( int count = 0; count < epoch; count++ )
   // a few rows to make sure the error is
   // getting smaller.
 
-  for( int row = 0; row < 1; row++ )
+  for( int row = 0; row < 3; row++ )
     {
     setInputRow( row );
     forwardPass( row );
@@ -96,6 +103,10 @@ for( int count = 0; count < epoch; count++ )
 
     adjustWeights( hiddenLayer, // fromLayer
                    outputLayer, // toSetLayer
+                   stepSize );
+
+    adjustWeights( inputLayer, // fromLayer
+                   hiddenLayer, // toSetLayer
                    stepSize );
 
     }
@@ -198,12 +209,25 @@ setDeltaAtHidden( outputLayer,
 
 private void setDeltaAtOutput( int row )
 {
+VectorFlt actVec = new VectorFlt( mData );
+outputLayer.getActivationVec( actVec );
+
 // The value at zero is the bias.
 float aOut1 = outputLayer.getActivationAt( 1 );
 float aOut2 = outputLayer.getActivationAt( 2 );
 
 // mData.showStatus( "aOut1: " + aOut1 );
 // mData.showStatus( "aOut2: " + aOut2 );
+
+VectorFlt labelVec = new VectorFlt( mData );
+labelMatrix.copyVecAt( labelVec, row );
+
+VectorFlt errorVec = new VectorFlt( mData );
+
+// label - act
+errorVec.subtract( labelVec, actVec );
+errorVec.setVal( 0, 0 );
+float errorNormSqr = errorVec.normSquared();
 
 float label1 = labelMatrix.getVal( row, 1 );
 float label2 = labelMatrix.getVal( row, 2 );
@@ -240,8 +264,11 @@ float dErrorA2 = label2 - aOut2;
 float errorSqr = (dErrorA1 * dErrorA1) +
                  (dErrorA2 * dErrorA2);
 
+if( errorSqr != errorNormSqr )
+  throw new Exception( "errorNormSqr" );
+
 mData.showStatus( "errorSqr: " +
-                  errorSqr.ToString( "N4" ));
+                  errorSqr.ToString( "N6" ));
 
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
@@ -389,8 +416,14 @@ int maxToSet = toSetLayer.getSize();
 for( int countFrom = 1; countFrom < maxFrom;
                         countFrom++ )
   {
+  // The is the activation of the neuron
+  // in the from layer, the input layer,
+  // which is going to output to the
+  // toSet neuron through the weight.
+
   float act = fromLayer.
                getActivationAt( countFrom );
+
   for( int countToSet = 1;
             countToSet < maxToSet; countToSet++ )
     {
@@ -398,6 +431,9 @@ for( int countFrom = 1; countFrom < maxFrom;
                                  countToSet );
     float weight = toSetLayer.getWeight(
                  countToSet, countFrom );
+
+    // The Greek letter Eta is often used
+    // to represent the stepSize.
 
     float wAdjust = stepSize * delta * act;
     // mData.showStatus( "wAdjust: " +

@@ -189,25 +189,20 @@ int seed = (int)(seedTime.getIndex()
 seed += randIndex;
 
 Random rand = new Random( seed );
-float halfWeight = maxWeight / 2;
+// float halfWeight = maxWeight / 2;
 
 int max = weightVec.getSize();
 
 // Random value between 0 and maxWeight.
-// It is shifted down by half of max weight
-// so that the range is -50 to 50 if the
-// max weight is 100.
 
-// This sets a random bias at zero too.
-
-// Starting at zero to set the bias too.
+// This sets a random bias at index zero too.
 
 for( int count = 0; count < max; count++ )
   {
   float weight = (float)(rand.NextDouble() *
                                   maxWeight );
 
-  weight -= halfWeight;
+  // weight -= halfWeight;
 
   weightVec.setVal( count, weight );
   }

@@ -108,6 +108,22 @@ for( int count = 1; count < max; count++ )
 }
 
 
+internal void getActivationVec( 
+                           VectorFlt vecToGet )
+{
+int max = neuronAr.Length;
+
+// If the size needs to be set.
+vecToGet.setSize( max );
+
+for( int count = 0; count < max; count++ )
+  {
+  float act = neuronAr[count].getActivation();
+  vecToGet.setVal( count, act );
+  }
+}
+
+
 
 internal float getActivationAt( int where )
 {
