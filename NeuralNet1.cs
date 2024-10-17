@@ -81,19 +81,21 @@ setRandomWeights( randMax );
 // Different layers might have different
 // step sizes.
 
-float stepSize = 0.005F;
+float stepSize = 0.05F;
 
 // An epoch is one complete pass through
 // the entire training set.
 
-int epoch = 100;
+int epoch = 20;
 for( int count = 0; count < epoch; count++ )
   {
   // You could test this with one row or just
   // a few rows to make sure the error is
   // getting smaller.
 
-  for( int row = 0; row < 3; row++ )
+  mData.showStatus( " " );
+
+  for( int row = 0; row < 20; row++ )
     {
     setInputRow( row );
     forwardPass( row );
@@ -216,8 +218,9 @@ outputLayer.getActivationVec( actVec );
 float aOut1 = outputLayer.getActivationAt( 1 );
 float aOut2 = outputLayer.getActivationAt( 2 );
 
-// mData.showStatus( "aOut1: " + aOut1 );
-// mData.showStatus( "aOut2: " + aOut2 );
+mData.showStatus( " " );
+mData.showStatus( "aOut1: " + aOut1 );
+mData.showStatus( "aOut2: " + aOut2 );
 
 VectorFlt labelVec = new VectorFlt( mData );
 labelMatrix.copyVecAt( labelVec, row );
@@ -232,8 +235,8 @@ float errorNormSqr = errorVec.normSquared();
 float label1 = labelMatrix.getVal( row, 1 );
 float label2 = labelMatrix.getVal( row, 2 );
 
-// mData.showStatus( "label1: " + label1 );
-// mData.showStatus( "label2: " + label2 );
+mData.showStatus( "label1: " + label1 );
+mData.showStatus( "label2: " + label2 );
 
 // delta is dError / dZ.
 // Which is (dError / dA) * (dA / dZ)
@@ -243,23 +246,15 @@ float label2 = labelMatrix.getVal( row, 2 );
 // What are the different ways a Cost
 // function could be done?
 
-// The sign of the error makes it so that
-// you change the weights in the right
-// direction.  To make the errors smaller.
-// The tutorial shows this as: aOut1 - label1
-// The tutorial is showing the negative of
-// the gradient vector.  To go downhill.
-
-// But the book shows it like this:
 // dError / dA = dErrorA1
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
 // mData.showStatus( " " );
-// mData.showStatus( "dErrorA1: " +
-//                  dErrorA1.ToString( "N4" ));
-// mData.showStatus( "dErrorA2: " +
-//                  dErrorA2.ToString( "N4" ));
+mData.showStatus( "dErrorA1: " +
+                  dErrorA1.ToString( "N4" ));
+mData.showStatus( "dErrorA2: " +
+                  dErrorA2.ToString( "N4" ));
 
 float errorSqr = (dErrorA1 * dErrorA1) +
                  (dErrorA2 * dErrorA2);

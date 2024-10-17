@@ -108,7 +108,7 @@ for( int count = 1; count < max; count++ )
 }
 
 
-internal void getActivationVec( 
+internal void getActivationVec(
                            VectorFlt vecToGet )
 {
 int max = neuronAr.Length;
