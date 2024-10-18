@@ -81,25 +81,43 @@ setRandomWeights( randMax );
 // Different layers might have different
 // step sizes.
 
+// The stepSize is the learning rate.
 float stepSize = 0.05F;
 
 // An epoch is one complete pass through
 // the entire training set.
 
-int epoch = 20;
+int epoch = 2;
+int maxrow = 1500;
+int maxLabel = labelMatrix.getLastAppend();
+if( maxrow >= maxLabel )
+  maxrow = maxLabel - 1;
+
 for( int count = 0; count < epoch; count++ )
   {
+  if( !mData.checkEvents())
+    return;
+
   // You could test this with one row or just
   // a few rows to make sure the error is
   // getting smaller.
 
   mData.showStatus( " " );
-
-  for( int row = 0; row < 20; row++ )
+  int dems = 0;
+  int repub = 0;
+  for( int row = 0; row < maxrow; row++ )
     {
+    // if( labelMatrix.getVal( row, 1 ) == 1)
+      // continue; // Repub only.
+
+    if( labelMatrix.getVal( row, 1 ) == 1)
+      dems++;
+    else
+      repub++;
+
     setInputRow( row );
     forwardPass( row );
-    backprop( row );
+    backprop( row, maxrow );
 
     adjustBias( outputLayer, stepSize );
 
@@ -112,6 +130,9 @@ for( int count = 0; count < epoch; count++ )
                    stepSize );
 
     }
+
+  mData.showStatus( "dems: " + dems );
+  mData.showStatus( "repub: " + repub );
   }
 
 mData.showStatus( "NeuralNet.test() end." );
@@ -179,6 +200,11 @@ for( int count = 0; count < col; count++ )
   {
   float val = inputMatrix.getVal( row, count );
   inputLayer.setActivationAt( count + 1, val );
+  // if( row < 3 )
+    // {
+    // mData.showStatus( "Input: " +
+    //                   val.ToString( "N1" ));
+    //}
   }
 }
 
@@ -196,20 +222,21 @@ outputLayer.calcActSigmoid();
 
 
 
-private void backprop( int row )
+private void backprop( int row, int maxrow )
 {
 // This is done after each forward pass
 // using specific values of Activation
 // ZSum, etc.
 
-setDeltaAtOutput( row );
+setDeltaAtOutput( row, maxrow );
 setDeltaAtHidden( outputLayer,
                   hiddenLayer, row );
 }
 
 
 
-private void setDeltaAtOutput( int row )
+private void setDeltaAtOutput( int row,
+                               int maxrow )
 {
 VectorFlt actVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
@@ -217,10 +244,6 @@ outputLayer.getActivationVec( actVec );
 // The value at zero is the bias.
 float aOut1 = outputLayer.getActivationAt( 1 );
 float aOut2 = outputLayer.getActivationAt( 2 );
-
-mData.showStatus( " " );
-mData.showStatus( "aOut1: " + aOut1 );
-mData.showStatus( "aOut2: " + aOut2 );
 
 VectorFlt labelVec = new VectorFlt( mData );
 labelMatrix.copyVecAt( labelVec, row );
@@ -235,9 +258,6 @@ float errorNormSqr = errorVec.normSquared();
 float label1 = labelMatrix.getVal( row, 1 );
 float label2 = labelMatrix.getVal( row, 2 );
 
-mData.showStatus( "label1: " + label1 );
-mData.showStatus( "label2: " + label2 );
-
 // delta is dError / dZ.
 // Which is (dError / dA) * (dA / dZ)
 // That is the Chain Rule for those
@@ -250,11 +270,18 @@ mData.showStatus( "label2: " + label2 );
 float dErrorA1 = label1 - aOut1;
 float dErrorA2 = label2 - aOut2;
 
-// mData.showStatus( " " );
-mData.showStatus( "dErrorA1: " +
-                  dErrorA1.ToString( "N4" ));
-mData.showStatus( "dErrorA2: " +
-                  dErrorA2.ToString( "N4" ));
+if( (row < 5) || (row > (maxrow - 5)))
+  {
+  mData.showStatus( " " );
+  mData.showStatus( "aOut1: " + aOut1 );
+  mData.showStatus( "aOut2: " + aOut2 );
+  mData.showStatus( "label1: " + label1 );
+  mData.showStatus( "label2: " + label2 );
+  // mData.showStatus( "dErrorA1: " +
+  //                dErrorA1.ToString( "N4" ));
+  // mData.showStatus( "dErrorA2: " +
+  //                dErrorA2.ToString( "N4" ));
+  }
 
 float errorSqr = (dErrorA1 * dErrorA1) +
                  (dErrorA2 * dErrorA2);
@@ -262,8 +289,8 @@ float errorSqr = (dErrorA1 * dErrorA1) +
 if( errorSqr != errorNormSqr )
   throw new Exception( "errorNormSqr" );
 
-mData.showStatus( "errorSqr: " +
-                  errorSqr.ToString( "N6" ));
+// mData.showStatus( "errorSqr: " +
+//                   errorSqr.ToString( "N6" ));
 
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
@@ -396,8 +423,8 @@ for( int count = 1; count < max; count++ )
 }
 
 
-
-
+This is wrong.
+===== how?
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
