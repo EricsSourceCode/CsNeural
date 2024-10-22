@@ -424,7 +424,7 @@ for( int count = 1; count < max; count++ )
 
 
 This is wrong.
-===== how?
+===== 
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
