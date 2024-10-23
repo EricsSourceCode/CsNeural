@@ -36,6 +36,9 @@ private float activation = 0;
 // neuron in the L - 1 layer.
 
 private VectorFlt weightVec;
+===== Then use the average of the weights to
+update each weight.
+private VectorFlt avgWeightVec;
 
 
 

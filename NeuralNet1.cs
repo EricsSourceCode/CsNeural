@@ -423,8 +423,9 @@ for( int count = 1; count < max; count++ )
 }
 
 
-This is wrong.
-===== 
+  Adjust weights by the averages.
+=====
+Use the Neuron average weight vector.
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
