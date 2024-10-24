@@ -88,7 +88,8 @@ float stepSize = 0.05F;
 // the entire training set.
 
 int epoch = 2;
-int maxrow = 1500;
+int maxrow = 500;
+int batchSize = 20; // Mini-batch
 int maxLabel = labelMatrix.getLastAppend();
 if( maxrow >= maxLabel )
   maxrow = maxLabel - 1;
@@ -98,13 +99,13 @@ for( int count = 0; count < epoch; count++ )
   if( !mData.checkEvents())
     return;
 
-  // You could test this with one row or just
-  // a few rows to make sure the error is
-  // getting smaller.
-
   mData.showStatus( " " );
   int dems = 0;
   int repub = 0;
+  int batchCount = 0;
+  outputLayer.clearAllDeltaAvg();
+  hiddenLayer.clearAllDeltaAvg();
+
   for( int row = 0; row < maxrow; row++ )
     {
     // if( labelMatrix.getVal( row, 1 ) == 1)
@@ -119,16 +120,23 @@ for( int count = 0; count < epoch; count++ )
     forwardPass( row );
     backprop( row, maxrow );
 
-    adjustBias( outputLayer, stepSize );
+    batchCount++;
+    if( batchCount > batchSize )
+      {
+      adjustBias( outputLayer, stepSize );
+      adjustBias( hiddenLayer, stepSize );
+      adjustWeights( hiddenLayer, // fromLayer
+                     outputLayer, // toSetLayer
+                     stepSize );
 
-    adjustWeights( hiddenLayer, // fromLayer
-                   outputLayer, // toSetLayer
-                   stepSize );
+      adjustWeights( inputLayer, // fromLayer
+                     hiddenLayer, // toSetLayer
+                     stepSize );
 
-    adjustWeights( inputLayer, // fromLayer
-                   hiddenLayer, // toSetLayer
-                   stepSize );
-
+      // Clear to zero to start new mini-batch.
+      outputLayer.clearAllDeltaAvg();
+      hiddenLayer.clearAllDeltaAvg();
+      }
     }
 
   mData.showStatus( "dems: " + dems );
@@ -224,10 +232,6 @@ outputLayer.calcActSigmoid();
 
 private void backprop( int row, int maxrow )
 {
-// This is done after each forward pass
-// using specific values of Activation
-// ZSum, etc.
-
 setDeltaAtOutput( row, maxrow );
 setDeltaAtHidden( outputLayer,
                   hiddenLayer, row );
@@ -263,8 +267,6 @@ float label2 = labelMatrix.getVal( row, 2 );
 // That is the Chain Rule for those
 // derivatives.
 
-// What are the different ways a Cost
-// function could be done?
 
 // dError / dA = dErrorA1
 float dErrorA1 = label1 - aOut1;
@@ -312,6 +314,9 @@ float delta2 = dErrorA2 *
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
+
+outputLayer.addToDeltaAvgAt( 1, delta1 );
+outputLayer.addToDeltaAvgAt( 2, delta2 );
 }
 
 
@@ -394,6 +399,10 @@ for( int weightAt = 1;
 
   toSetLayer.setDeltaAt( weightAt, sumToSet );
 
+==== So then what?
+  toSetLayer.addToDeltaAvgAt( weightAt, 
+                              sumToSet );
+
   // mData.showStatus( "To set delta: " +
   //              sumToSet.ToString( "N4" ) );
   }
@@ -401,6 +410,7 @@ for( int weightAt = 1;
 
 
 
+// The old way.
 private void adjustBias( NeuronLayer1 layer,
                          float stepSize )
 {
@@ -423,9 +433,22 @@ for( int count = 1; count < max; count++ )
 }
 
 
-  Adjust weights by the averages.
-=====
-Use the Neuron average weight vector.
+
+
+// If you are calculating with matrices, which
+// happens in more optimized code in later
+// versions, then you'd calculate all
+// derivatives at once on a mini-batch.
+// You can't change any weights in the network
+// while you are doing that.  So with the
+// matrix results for a whole mini-batch,
+// you'd average rates of change for that
+// batch.
+
+
+
+
+// The old way.
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
@@ -450,6 +473,7 @@ for( int countFrom = 1; countFrom < maxFrom;
   for( int countToSet = 1;
             countToSet < maxToSet; countToSet++ )
     {
+
     float delta = toSetLayer.getDeltaAt(
                                  countToSet );
     float weight = toSetLayer.getWeight(

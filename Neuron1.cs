@@ -29,6 +29,7 @@ public class Neuron1
 {
 private MainData mData;
 private float delta = 0;
+private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
 
@@ -36,9 +37,6 @@ private float activation = 0;
 // neuron in the L - 1 layer.
 
 private VectorFlt weightVec;
-===== Then use the average of the weights to
-update each weight.
-private VectorFlt avgWeightVec;
 
 
 
@@ -123,9 +121,27 @@ return delta;
 }
 
 
+internal float getDeltaAvg()
+{
+return deltaAvg;
+}
+
+
 internal void setDelta( float setTo )
 {
 delta = setTo;
+}
+
+
+internal void addToDeltaAvg( float addTo )
+{
+deltaAvg += addTo;
+}
+
+
+internal void clearDeltaAvg()
+{
+deltaAvg = 0;
 }
 
 
