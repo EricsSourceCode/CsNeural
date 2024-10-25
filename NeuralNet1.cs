@@ -21,6 +21,22 @@ using System;
 public class NeuralNet1
 {
 private MainData mData;
+
+int batchSize = 20; // Mini-batch
+
+// The stepSize is the learning rate.
+// The Greek letter Eta is often used
+// to represent the stepSize.
+// Different layers might have different
+// step sizes.
+float stepSize = 0.05F;
+
+// An epoch is one complete pass through
+// the entire training set.
+int epoch = 5;
+int maxrow = 500;
+
+
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer;
 private NeuronLayer1 outputLayer;
@@ -81,15 +97,6 @@ setRandomWeights( randMax );
 // Different layers might have different
 // step sizes.
 
-// The stepSize is the learning rate.
-float stepSize = 0.05F;
-
-// An epoch is one complete pass through
-// the entire training set.
-
-int epoch = 2;
-int maxrow = 500;
-int batchSize = 20; // Mini-batch
 int maxLabel = labelMatrix.getLastAppend();
 if( maxrow >= maxLabel )
   maxrow = maxLabel - 1;
@@ -121,7 +128,7 @@ for( int count = 0; count < epoch; count++ )
     backprop( row, maxrow );
 
     batchCount++;
-    if( batchCount > batchSize )
+    if( batchCount >= batchSize )
       {
       adjustBias( outputLayer, stepSize );
       adjustBias( hiddenLayer, stepSize );
@@ -399,8 +406,7 @@ for( int weightAt = 1;
 
   toSetLayer.setDeltaAt( weightAt, sumToSet );
 
-==== So then what?
-  toSetLayer.addToDeltaAvgAt( weightAt, 
+  toSetLayer.addToDeltaAvgAt( weightAt,
                               sumToSet );
 
   // mData.showStatus( "To set delta: " +
@@ -410,7 +416,7 @@ for( int weightAt = 1;
 
 
 
-// The old way.
+
 private void adjustBias( NeuronLayer1 layer,
                          float stepSize )
 {
@@ -420,7 +426,10 @@ int max = layer.getSize();
 
 for( int count = 1; count < max; count++ )
   {
-  float delta = layer.getDeltaAt( count );
+  // float delta = layer.getDeltaAt( count );
+  float delta = layer.getDeltaAvgAt( count );
+  delta = delta / batchSize;
+
   float bias = layer.getBias( count );
   float biasAdj = delta * stepSize;
   // mData.showStatus( "biasAdj: " +
@@ -448,7 +457,6 @@ for( int count = 1; count < max; count++ )
 
 
 
-// The old way.
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
@@ -474,13 +482,15 @@ for( int countFrom = 1; countFrom < maxFrom;
             countToSet < maxToSet; countToSet++ )
     {
 
-    float delta = toSetLayer.getDeltaAt(
-                                 countToSet );
+    // float delta = toSetLayer.getDeltaAt(
+    //                          countToSet );
+    float delta = toSetLayer.getDeltaAvgAt(
+                                countToSet );
+    delta = delta / batchSize;
+
+
     float weight = toSetLayer.getWeight(
                  countToSet, countFrom );
-
-    // The Greek letter Eta is often used
-    // to represent the stepSize.
 
     float wAdjust = stepSize * delta * act;
     // mData.showStatus( "wAdjust: " +
