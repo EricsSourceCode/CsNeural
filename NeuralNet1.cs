@@ -22,27 +22,27 @@ public class NeuralNet1
 {
 private MainData mData;
 
-int batchSize = 20; // Mini-batch
-
 // The stepSize is the learning rate.
 // The Greek letter Eta is often used
 // to represent the stepSize.
 // Different layers might have different
 // step sizes.
-float stepSize = 0.05F;
+
+// float stepSize = 0.05F;
 
 // An epoch is one complete pass through
 // the entire training set.
-int epoch = 5;
-int maxrow = 500;
+
+int epoch = 2;
+int batchSize = 40; // Mini-batch
 
 
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer;
 private NeuronLayer1 outputLayer;
 private VectorFlt errorOutVec;
-private VectorArray inputMatrix;
-private VectorArray labelMatrix;
+private VectorArray labelArray;
+private VectorArray batchArray;
 
 
 
@@ -53,68 +53,84 @@ private NeuralNet1()
 
 
 
-internal NeuralNet1( MainData useMainData,
-                  VectorArray useMatrix,
-                  VectorArray useLabelMatrix )
+internal NeuralNet1( MainData useMainData )
 {
 mData = useMainData;
-inputMatrix = useMatrix;
-labelMatrix = useLabelMatrix;
-
-int last = inputMatrix.getLastAppend();
-if( labelMatrix.getLastAppend() != last )
-  {
-  throw new Exception(
-          "labelMatrix doesn't match last." );
-  }
 
 inputLayer = new NeuronLayer1( mData );
 hiddenLayer = new NeuronLayer1( mData );
 outputLayer = new NeuronLayer1( mData );
 errorOutVec = new VectorFlt( mData );
+labelArray = new VectorArray( mData );
+batchArray = new VectorArray( mData );
 }
 
 
 
-internal void test()
+internal void test( VectorArray demParagArray,
+                    VectorArray repubParagArray )
 {
 mData.showStatus( "NeuralNet1.test()." );
 
-setupNetTopology();
+int columns = demParagArray.getColumns();
+if( columns != repubParagArray.getColumns() )
+  {
+  throw new Exception(
+           "dem and repub columns." );
+  }
 
-float randMax = 1.0F / inputLayer.getSize();
+setupNetTopology( columns );
 
-// A byte could have a value up to 255.
-// But most letters are 97 'a' to 122 'z'.
+setRandomWeights();
 
-randMax = randMax / 100.0F;
-
-mData.showStatus( "randMax: " +
-                    randMax.ToString( "N8" ));
-
-setRandomWeights( randMax );
-
-// Different layers might have different
-// step sizes.
-
-int maxLabel = labelMatrix.getLastAppend();
-if( maxrow >= maxLabel )
-  maxrow = maxLabel - 1;
-
+int startAt = 0;
 for( int count = 0; count < epoch; count++ )
   {
   if( !mData.checkEvents())
     return;
 
+  mData.showStatus( "Epoch: " + count );
+
+  if( !oneEpoch( startAt, demParagArray,
+                 repubParagArray ))
+    return; // No more batches.
+
+  startAt += batchSize;
+  }
+
+mData.showStatus( "NeuralNet.test() end." );
+}
+
+
+private bool oneEpoch( int startAt,
+                  VectorArray demParagArray,
+                  VectorArray repubParagArray )
+{
+// Do all batches for one epoch.
+
+mData.showStatus( "One Epoch start: " +
+                                 startAt );
+
+// Make this count go to a huge number
+// so it just runs out of batches.
+
+for( int batchCount = 0; batchCount < 3;
+                         batchCount++ )
+  {
   mData.showStatus( " " );
-  int dems = 0;
-  int repub = 0;
-  int batchCount = 0;
+  mData.showStatus( "Batch: " + batchCount );
+
+  if( !makeOneBatch( startAt,
+                     demParagArray,
+                     repubParagArray ))
+    return false; // No more batches.
+
   outputLayer.clearAllDeltaAvg();
   hiddenLayer.clearAllDeltaAvg();
 
-  for( int row = 0; row < maxrow; row++ )
-    {
+
+/*
+====
     // if( labelMatrix.getVal( row, 1 ) == 1)
       // continue; // Repub only.
 
@@ -123,7 +139,9 @@ for( int count = 0; count < epoch; count++ )
     else
       repub++;
 
+    from the batch?
     setInputRow( row );
+
     forwardPass( row );
     backprop( row, maxrow );
 
@@ -145,22 +163,73 @@ for( int count = 0; count < epoch; count++ )
       hiddenLayer.clearAllDeltaAvg();
       }
     }
+*/
 
-  mData.showStatus( "dems: " + dems );
-  mData.showStatus( "repub: " + repub );
   }
 
-mData.showStatus( "NeuralNet.test() end." );
+return true;
 }
 
 
 
-private void setupNetTopology()
-{
-int col = inputMatrix.getColumns();
 
+private bool makeOneBatch( int startAt,
+                   VectorArray demParagArray,
+                   VectorArray repubParagArray )
+{
+int copyAt = startAt;
+int lastRow = demParagArray.getLastAppend();
+int lastRepubRow = repubParagArray.
+                          getLastAppend();
+if( lastRepubRow < lastRow )
+  lastRow = lastRepubRow;
+
+int columns = demParagArray.getColumns();
+
+// If the size is not already set.
+batchArray.setSize( batchSize + 2, columns );
+labelArray.setSize( batchSize + 2, 3 );
+
+batchArray.clearLastAppend();
+labelArray.clearLastAppend();
+
+VectorFlt copyVec = new VectorFlt( mData );
+
+VectorFlt labelVec = new VectorFlt( mData );
+labelVec.setSize( 3 );
+labelVec.setVal( 0, 0 ); // Bias is not used.
+
+for( int count = 0; count < (batchSize / 2);
+                                count++ )
+  {
+  if( copyAt >= lastRow )
+    return false; // Not a full batch.
+
+  demParagArray.copyVecAt( copyVec, copyAt );
+  batchArray.appendVecCopy( copyVec );
+  labelVec.setVal( 1, 0 ); // Democrat
+  labelVec.setVal( 2, 1 );
+  labelArray.appendVecCopy( labelVec );
+
+  repubParagArray.copyVecAt( copyVec, copyAt );
+  batchArray.appendVecCopy( copyVec );
+  labelVec.setVal( 1, 1 ); // Republican
+  labelVec.setVal( 2, 0 );
+  labelArray.appendVecCopy( labelVec );
+
+  copyAt++;
+  }
+
+return true;
+}
+
+
+
+
+private void setupNetTopology( int columns )
+{
 // Plus 1 for the bias at zero.
-int layerSize = col + 1;
+int layerSize = columns + 1;
 
 inputLayer.setSize( layerSize );
 
@@ -181,29 +250,39 @@ errorOutVec.setSize( 3 );
 
 
 
-private void setRandomWeights( float maxWeight )
+private void setRandomWeights()
 {
+float randMax = 1.0F / inputLayer.getSize();
+
+// A byte could have a value up to 255.
+// But most letters are 97 'a' to 122 'z'.
+
+randMax = randMax / 100.0F;
+
+mData.showStatus( "randMax: " +
+                    randMax.ToString( "N8" ));
+
 // The input layer doesn't use weights.
 // inputLayer.setRandomWeights()
 
-hiddenLayer.setRandomWeights( maxWeight );
-outputLayer.setRandomWeights( maxWeight );
+hiddenLayer.setRandomWeights( randMax );
+outputLayer.setRandomWeights( randMax );
 }
 
 
 
 
-private void setInputRow( int row )
+private void setInputRow( int row,
+                  VectorArray batchArray )
 {
+/*
 // Set the input layer neurons (activation
 // value) from data matrix.
 
-int col = inputMatrix.getColumns();
+int col = batchArray.getColumns();
 
 // Plus 1 for the bias at zero.
 int layerSize = col + 1;
-// mData.showStatus( "InputLayer size: " +
-//                   layerSize );
 
 if( layerSize != inputLayer.getSize())
   {
@@ -221,6 +300,7 @@ for( int count = 0; count < col; count++ )
     //                   val.ToString( "N1" ));
     //}
   }
+*/
 }
 
 
@@ -249,6 +329,7 @@ setDeltaAtHidden( outputLayer,
 private void setDeltaAtOutput( int row,
                                int maxrow )
 {
+/*
 VectorFlt actVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
 
@@ -324,6 +405,7 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 outputLayer.addToDeltaAvgAt( 1, delta1 );
 outputLayer.addToDeltaAvgAt( 2, delta2 );
+*/
 }
 
 
@@ -334,6 +416,7 @@ private void setDeltaAtHidden(
                       NeuronLayer1 toSetLayer,
                       int row )
 {
+/*
 int maxToSet = toSetLayer.getSize();
 int maxFrom = fromLayer.getSize();
 
@@ -412,6 +495,7 @@ for( int weightAt = 1;
   // mData.showStatus( "To set delta: " +
   //              sumToSet.ToString( "N4" ) );
   }
+*/
 }
 
 
