@@ -95,32 +95,37 @@ for( int count = 0; count < epoch; count++ )
                  repubParagArray ))
     return; // No more batches.
 
-  startAt += batchSize;
   }
 
 mData.showStatus( "NeuralNet.test() end." );
 }
 
 
-private bool oneEpoch( int startAt,
+
+
+private bool oneEpoch( 
                   VectorArray demParagArray,
                   VectorArray repubParagArray )
 {
 // Do all batches for one epoch.
 
-mData.showStatus( "One Epoch start: " +
-                                 startAt );
 
-// Make this count go to a huge number
+// Start for the entire set of data.
+
+int startRow = 0;
+
+// Make this wCount go to a huge number
 // so it just runs out of batches.
 
-for( int batchCount = 0; batchCount < 3;
-                         batchCount++ )
+// while-loop: While there are still batches
+// in this epoch.
+for( int wCount = 0; wCount < 3;
+                         wCount++ )
   {
   mData.showStatus( " " );
-  mData.showStatus( "Batch: " + batchCount );
+  mData.showStatus( "Batch: " + wCount );
 
-  if( !makeOneBatch( startAt,
+  if( !makeOneBatch( startRow,
                      demParagArray,
                      repubParagArray ))
     return false; // No more batches.
@@ -128,27 +133,28 @@ for( int batchCount = 0; batchCount < 3;
   outputLayer.clearAllDeltaAvg();
   hiddenLayer.clearAllDeltaAvg();
 
+  for( int count = 0; count < batchSize; count++ )
+    {
+======
 
 /*
-====
-    // if( labelMatrix.getVal( row, 1 ) == 1)
-      // continue; // Repub only.
+// the labelArray is set in makeOneBatch
+  labelVec.setVal( 1, 0 ); // Democrat
 
-    if( labelMatrix.getVal( row, 1 ) == 1)
-      dems++;
-    else
-      repub++;
 
-    from the batch?
-    setInputRow( row );
+ // count is the row in the batch.
+  // labelArray.getVal( count, 1 )
+
+From the row in the batch array.
+  setInputRow( row );
 
     forwardPass( row );
     backprop( row, maxrow );
+    }
 
-    batchCount++;
-    if( batchCount >= batchSize )
-      {
-      adjustBias( outputLayer, stepSize );
+
+====== 
+  adjustBias( outputLayer, stepSize );
       adjustBias( hiddenLayer, stepSize );
       adjustWeights( hiddenLayer, // fromLayer
                      outputLayer, // toSetLayer
@@ -161,10 +167,9 @@ for( int batchCount = 0; batchCount < 3;
       // Clear to zero to start new mini-batch.
       outputLayer.clearAllDeltaAvg();
       hiddenLayer.clearAllDeltaAvg();
-      }
-    }
 */
 
+  startRow += batchSize;
   }
 
 return true;
