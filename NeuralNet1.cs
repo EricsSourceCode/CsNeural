@@ -28,14 +28,8 @@ private MainData mData;
 // Different layers might have different
 // step sizes.
 
-// float stepSize = 0.05F;
-
-// An epoch is one complete pass through
-// the entire training set.
-
-int epoch = 2;
-int batchSize = 40; // Mini-batch
-
+private float stepSize = 0.05F;
+private int batchSize = 40;
 
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer;
@@ -79,6 +73,11 @@ if( columns != repubParagArray.getColumns() )
            "dem and repub columns." );
   }
 
+// An epoch is one complete pass through
+// the entire training set.
+
+int epoch = 2;
+
 setupNetTopology( columns );
 
 setRandomWeights();
@@ -112,14 +111,18 @@ private bool oneEpoch(
 
 int startRow = 0;
 
-// Make this wCount go to a huge number
+// Make this batchCount go to a huge number
 // so it just runs out of batches.
 
-for( int wCount = 0; wCount < 3;
-                         wCount++ )
+=====
+for( int batchCount = 0; batchCount < 100;
+                         batchCount++ )
   {
   mData.showStatus( " " );
-  mData.showStatus( "Batch: " + wCount );
+  mData.showStatus( "Batch: " + batchCount );
+
+  // makeOneBatch() only makes full size
+  // batches.
 
   if( !makeOneBatch( startRow,
                      demParagArray,
@@ -129,35 +132,24 @@ for( int wCount = 0; wCount < 3;
   outputLayer.clearAllDeltaAvg();
   hiddenLayer.clearAllDeltaAvg();
 
-  // makeOneBatch() only makes full size
-  // batches.
-
-  for( int count = 0; count < batchSize; count++ )
+  for( int rowCount = 0; rowCount < batchSize;
+                                    rowCount++ )
     {
-    // labelArray.getVal( count, 1 )
-
     // From the row in the batch array.
-    setInputRow( count );
+    setInputRow( rowCount );
     forwardPass();
-    backprop( count );
+    backprop( rowCount );
     }
 
-/*
-======
   adjustBias( outputLayer, stepSize );
-      adjustBias( hiddenLayer, stepSize );
-      adjustWeights( hiddenLayer, // fromLayer
-                     outputLayer, // toSetLayer
-                     stepSize );
+  adjustBias( hiddenLayer, stepSize );
+  adjustWeights( hiddenLayer, // fromLayer
+                 outputLayer, // toSetLayer
+                 stepSize );
 
-      adjustWeights( inputLayer, // fromLayer
-                     hiddenLayer, // toSetLayer
-                     stepSize );
-
-      // Clear to zero to start new mini-batch.
-      outputLayer.clearAllDeltaAvg();
-      hiddenLayer.clearAllDeltaAvg();
-  */
+  adjustWeights( inputLayer, // fromLayer
+                  hiddenLayer, // toSetLayer
+                  stepSize );
 
   startRow += batchSize;
   }
@@ -315,17 +307,33 @@ setDeltaAtHidden( outputLayer,
 private void setDeltaAtOutput( int row )
 {
 VectorFlt actVec = new VectorFlt( mData );
-outputLayer.getActivationVec( actVec );
-
 VectorFlt labelVec = new VectorFlt( mData );
+VectorFlt errorVec = new VectorFlt( mData );
+
+outputLayer.getActivationVec( actVec );
 labelArray.copyVecAt( labelVec, row );
 
-VectorFlt errorVec = new VectorFlt( mData );
+if( row == 0 )
+  {
+  float showAct1 = actVec.getVal( 1 );
+  float showAct2 = actVec.getVal( 2 );
+  float showLabel1 = labelVec.getVal( 1 );
+  float showLabel2 = labelVec.getVal( 2 );
+
+  mData.showStatus( " " );
+  mData.showStatus( "Act1: " +
+                 showAct1.ToString( "N4" ) );
+  mData.showStatus( "Act2: " +
+                 showAct2.ToString( "N4" ) );
+  mData.showStatus( "Label1: " +
+                 showLabel1.ToString( "N0" ) );
+  mData.showStatus( "Label2: " +
+                 showLabel2.ToString( "N0" ) );
+  }
 
 // label - act
 errorVec.subtract( labelVec, actVec );
 errorVec.setVal( 0, 0 );
-
 
 // For a Cost function:
 // float errorNormSqr = errorVec.normSquared();
@@ -334,16 +342,12 @@ errorVec.setVal( 0, 0 );
 // Which is (dError / dA) * (dA / dZ)
 // That is the Chain Rule for those
 // derivatives.
-// dError / dA = dErrorA1
-
 
 float z1 = outputLayer.getZSumAt( 1 );
 float z2 = outputLayer.getZSumAt( 2 );
 
-
 // The value of derivSigmoid() can be
 // between 0 and 0.25.
-
 
 // dError / dA = dErrorA1
 float dErrorA1 = errorVec.getVal( 1 );
@@ -353,11 +357,6 @@ float delta1 = dErrorA1 *
                  Activation.derivSigmoid( z1 );
 float delta2 = dErrorA2 *
                  Activation.derivSigmoid( z2 );
-
-// mData.showStatus( "delta1: " +
-//                 delta1.ToString( "N4" ) );
-// mData.showStatus( "delta2: " +
-//                 delta2.ToString( "N4" ) );
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
