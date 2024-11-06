@@ -28,8 +28,8 @@ private MainData mData;
 // Different layers might have different
 // step sizes.
 
-private float stepSize = 0.05F;
-private int batchSize = 40;
+private float stepSize = 0.1F;
+private int batchSize = 50;
 
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer;
@@ -114,8 +114,7 @@ int startRow = 0;
 // Make this batchCount go to a huge number
 // so it just runs out of batches.
 
-=====
-for( int batchCount = 0; batchCount < 100;
+for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
   mData.showStatus( " " );
