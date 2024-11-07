@@ -116,7 +116,7 @@ int startRow = 0;
 // while( true )
 
 
-for( int batchCount = 0; batchCount < 1000;
+for( int batchCount = 0; batchCount < 100;
                          batchCount++ )
   {
   if( !makeOneBatch( startRow,
@@ -184,24 +184,38 @@ VectorFlt labelVec = new VectorFlt( mData );
 labelVec.setSize( 3 );
 labelVec.setVal( 0, 0 ); // Bias is not used.
 
-// for( int count = 0; count < (batchSize / 2);
-for( int count = 0; count < batchSize;
+for( int count = 0; count < (batchSize / 2);
+// for( int count = 0; count < batchSize;
                                 count++ )
   {
   if( copyAt >= lastRow )
     return false; // Not a full batch.
 
   demParagArray.copyVecAt( copyVec, copyAt );
+
+  // Test:
+  // Make it all zeros for dem input.
+  // That makes the input very _un_ complex.
+  // If the input is too complex then it
+  // can't figure out the weights.
+  copyVec.clearTo( 0 );
+
   batchArray.appendVecCopy( copyVec );
   labelVec.setVal( 1, 0 ); // Democrat
   labelVec.setVal( 2, 1 );
   labelArray.appendVecCopy( labelVec );
 
-  // repubParagArray.copyVecAt( copyVec, copyAt );
-  // batchArray.appendVecCopy( copyVec );
-  // labelVec.setVal( 1, 1 ); // Republican
-  // labelVec.setVal( 2, 0 );
-  // labelArray.appendVecCopy( labelVec );
+  repubParagArray.copyVecAt( copyVec, copyAt );
+
+  // Test:
+  // Make it all ones for repub input.
+  // copyVec.clearTo( 1 );
+
+  batchArray.appendVecCopy( copyVec );
+
+  labelVec.setVal( 1, 1 ); // Republican
+  labelVec.setVal( 2, 0 );
+  labelArray.appendVecCopy( labelVec );
 
   copyAt++;
   }
@@ -209,7 +223,7 @@ for( int count = 0; count < batchSize;
 if( labelArray.getLastAppend() != batchArray.
                    getLastAppend())
   {
-  throw new Exception( 
+  throw new Exception(
              "label last != batch last" );
   }
 
@@ -321,7 +335,7 @@ VectorFlt errorVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
 labelArray.copyVecAt( labelVec, row );
 
-if( row == 0 )
+// if( row == 0 )
   {
   float showAct1 = actVec.getVal( 1 );
   float showAct2 = actVec.getVal( 2 );
