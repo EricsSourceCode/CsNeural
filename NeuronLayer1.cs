@@ -200,13 +200,14 @@ for( int count = 1; count < max; count++ )
 }
 
 
-internal void clearAllDeltaAvg()
-{
-int max = neuronAr.Length;
-for( int count = 1; count < max; count++ )
-  neuronAr[count].clearDeltaAvg();
 
-}
+// internal void clearAllDeltaAvg()
+// {
+// int max = neuronAr.Length;
+// for( int count = 1; count < max; count++ )
+  // neuronAr[count].clearDeltaAvg();
+
+// }
 
 
 
@@ -225,38 +226,38 @@ return neuronAr[where].getDelta();
 
 
 
-internal float getDeltaAvgAt( int where )
-{
-int max = neuronAr.Length;
-RangeT.test( where, 1, max - 1,
-       "NeuronLayer.getDeltaAvgAt() range." );
+// internal float getDeltaAvgAt( int where )
+// {
+// int max = neuronAr.Length;
+// RangeT.test( where, 1, max - 1,
+//      "NeuronLayer.getDeltaAvgAt() range." );
 
-return neuronAr[where].getDeltaAvg();
-}
-
-
-
-
-internal void addToDeltaAvgAt( int where,
-                               float addTo )
-{
-int max = neuronAr.Length;
-RangeT.test( where, 1, max - 1,
-       "NeuronLayer.addToDeltaAvgAt() range." );
-
-neuronAr[where].addToDeltaAvg( addTo );
-}
+// return neuronAr[where].getDeltaAvg();
+// }
 
 
 
-internal void clearDeltaAvgAt( int where )
-{
-int max = neuronAr.Length;
-RangeT.test( where, 1, max - 1,
-       "NeuronLayer.clearDeltaAvgAt() range." );
 
-neuronAr[where].clearDeltaAvg();
-}
+// internal void addToDeltaAvgAt( int where,
+//                               float addTo )
+// {
+// int max = neuronAr.Length;
+// RangeT.test( where, 1, max - 1,
+//     "NeuronLayer.addToDeltaAvgAt() range." );
+
+// neuronAr[where].addToDeltaAvg( addTo );
+// }
+
+
+
+// internal void clearDeltaAvgAt( int where )
+// {
+// int max = neuronAr.Length;
+// RangeT.test( where, 1, max - 1,
+//      "NeuronLayer.clearDeltaAvgAt() range." );
+
+// neuronAr[where].clearDeltaAvg();
+// }
 
 
 

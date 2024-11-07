@@ -29,7 +29,7 @@ public class Neuron1
 {
 private MainData mData;
 private float delta = 0;
-private float deltaAvg = 0;
+// private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
 
@@ -121,10 +121,10 @@ return delta;
 }
 
 
-internal float getDeltaAvg()
-{
-return deltaAvg;
-}
+// internal float getDeltaAvg()
+// {
+// return deltaAvg;
+// }
 
 
 internal void setDelta( float setTo )
@@ -133,16 +133,16 @@ delta = setTo;
 }
 
 
-internal void addToDeltaAvg( float addTo )
-{
-deltaAvg += addTo;
-}
+// internal void addToDeltaAvg( float addTo )
+// {
+// deltaAvg += addTo;
+// }
 
 
-internal void clearDeltaAvg()
-{
-deltaAvg = 0;
-}
+// internal void clearDeltaAvg()
+// {
+// deltaAvg = 0;
+// }
 
 
 

@@ -22,13 +22,13 @@ public class NeuralNet1
 {
 private MainData mData;
 
-// The stepSize is the learning rate.
 // The Greek letter Eta is often used
-// to represent the stepSize.
+// to represent the learning rate.
 // Different layers might have different
-// step sizes.
+// learning rates.
 
-private float stepSize = 0.1F;
+private float learnRate = 0.1F;
+
 private int batchSize = 50;
 
 private NeuronLayer1 inputLayer;
@@ -73,7 +73,7 @@ if( columns != repubParagArray.getColumns() )
            "dem and repub columns." );
   }
 
-// An epoch is one complete pass through
+// One epoch is one complete pass through
 // the entire training set.
 
 int epoch = 2;
@@ -111,25 +111,21 @@ private bool oneEpoch(
 
 int startRow = 0;
 
-// Make this batchCount go to a huge number
+// Make this batchCount go to a big number
 // so it just runs out of batches.
+// while( true )
+
 
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
-  mData.showStatus( " " );
-  mData.showStatus( "Batch: " + batchCount );
-
-  // makeOneBatch() only makes full size
-  // batches.
-
   if( !makeOneBatch( startRow,
                      demParagArray,
                      repubParagArray ))
     return false; // No more batches.
 
-  outputLayer.clearAllDeltaAvg();
-  hiddenLayer.clearAllDeltaAvg();
+  // outputLayer.clearAllDeltaAvg();
+  // hiddenLayer.clearAllDeltaAvg();
 
   for( int rowCount = 0; rowCount < batchSize;
                                     rowCount++ )
@@ -138,17 +134,20 @@ for( int batchCount = 0; batchCount < 1000;
     setInputRow( rowCount );
     forwardPass();
     backprop( rowCount );
+
+    // Not doing an average for the batch here.
+    // }
+
+    adjustBias( outputLayer, learnRate );
+    adjustBias( hiddenLayer, learnRate );
+    adjustWeights( hiddenLayer, // fromLayer
+                   outputLayer, // toSetLayer
+                   learnRate );
+
+    adjustWeights( inputLayer, // fromLayer
+                   hiddenLayer, // toSetLayer
+                   learnRate );
     }
-
-  adjustBias( outputLayer, stepSize );
-  adjustBias( hiddenLayer, stepSize );
-  adjustWeights( hiddenLayer, // fromLayer
-                 outputLayer, // toSetLayer
-                 stepSize );
-
-  adjustWeights( inputLayer, // fromLayer
-                  hiddenLayer, // toSetLayer
-                  stepSize );
 
   startRow += batchSize;
   }
@@ -180,12 +179,13 @@ batchArray.clearLastAppend();
 labelArray.clearLastAppend();
 
 VectorFlt copyVec = new VectorFlt( mData );
-
 VectorFlt labelVec = new VectorFlt( mData );
+
 labelVec.setSize( 3 );
 labelVec.setVal( 0, 0 ); // Bias is not used.
 
-for( int count = 0; count < (batchSize / 2);
+// for( int count = 0; count < (batchSize / 2);
+for( int count = 0; count < batchSize;
                                 count++ )
   {
   if( copyAt >= lastRow )
@@ -197,13 +197,20 @@ for( int count = 0; count < (batchSize / 2);
   labelVec.setVal( 2, 1 );
   labelArray.appendVecCopy( labelVec );
 
-  repubParagArray.copyVecAt( copyVec, copyAt );
-  batchArray.appendVecCopy( copyVec );
-  labelVec.setVal( 1, 1 ); // Republican
-  labelVec.setVal( 2, 0 );
-  labelArray.appendVecCopy( labelVec );
+  // repubParagArray.copyVecAt( copyVec, copyAt );
+  // batchArray.appendVecCopy( copyVec );
+  // labelVec.setVal( 1, 1 ); // Republican
+  // labelVec.setVal( 2, 0 );
+  // labelArray.appendVecCopy( labelVec );
 
   copyAt++;
+  }
+
+if( labelArray.getLastAppend() != batchArray.
+                   getLastAppend())
+  {
+  throw new Exception( 
+             "label last != batch last" );
   }
 
 return true;
@@ -296,6 +303,8 @@ outputLayer.calcActSigmoid();
 
 private void backprop( int row )
 {
+// The row in the batch array.
+
 setDeltaAtOutput( row );
 setDeltaAtHidden( outputLayer,
                   hiddenLayer, row );
@@ -360,8 +369,8 @@ float delta2 = dErrorA2 *
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
 
-outputLayer.addToDeltaAvgAt( 1, delta1 );
-outputLayer.addToDeltaAvgAt( 2, delta2 );
+// outputLayer.addToDeltaAvgAt( 1, delta1 );
+// outputLayer.addToDeltaAvgAt( 2, delta2 );
 }
 
 
@@ -384,37 +393,18 @@ for( int weightAt = 1;
   // weightAt is also the index of the neuron
   // in the layer that is about to be set.
 
-  // mData.showStatus( " " );
-  // mData.showStatus( "weightAt: " + weightAt );
-
   float sumToSet = 0;
 
   for( int fromNeuron = 1;
            fromNeuron < maxFrom; fromNeuron++ )
     {
-    // mData.showStatus( "  fromNeuron: " +
-    //                           fromNeuron );
-
     float deltaFrom = fromLayer.getDeltaAt(
                                   fromNeuron );
 
-    // mData.showStatus( "  deltaFrom: " +
-    //             deltaFrom.ToString( "N4" ) );
-
-    // What is the weight between these
-    // two neurons?
     // Here is a Matrix.  Row and column.
 
     float weight = fromLayer.getWeight(
                        fromNeuron, weightAt );
-
-    // mData.showStatus( "  weight: " +
-    //               weight.ToString( "N4" ) );
-
-    // If weight and deltaFrom were both
-    // negative then sumToSet would have a
-    // positive number added to it.  And
-    // other +/- variations like that.
 
     // This is the z from the neuron I
     // am about to set.
@@ -444,11 +434,8 @@ for( int weightAt = 1;
 
   toSetLayer.setDeltaAt( weightAt, sumToSet );
 
-  toSetLayer.addToDeltaAvgAt( weightAt,
-                              sumToSet );
-
-  // mData.showStatus( "To set delta: " +
-  //              sumToSet.ToString( "N4" ) );
+  // toSetLayer.addToDeltaAvgAt( weightAt,
+  //                            sumToSet );
   }
 }
 
@@ -456,7 +443,7 @@ for( int weightAt = 1;
 
 
 private void adjustBias( NeuronLayer1 layer,
-                         float stepSize )
+                         float rate )
 {
 // dCost / dBias = delta
 
@@ -464,17 +451,13 @@ int max = layer.getSize();
 
 for( int count = 1; count < max; count++ )
   {
-  // float delta = layer.getDeltaAt( count );
-  float delta = layer.getDeltaAvgAt( count );
-  delta = delta / batchSize;
+  float delta = layer.getDeltaAt( count );
+  // float delta = layer.getDeltaAvgAt( count );
+  // delta = delta / batchSize;
 
   float bias = layer.getBias( count );
-  float biasAdj = delta * stepSize;
-  // mData.showStatus( "biasAdj: " +
-  //                 biasAdj.ToString( "N4" ));
-
+  float biasAdj = delta * rate;
   bias += biasAdj;
-
   layer.setBias( count, bias );
   }
 }
@@ -482,23 +465,10 @@ for( int count = 1; count < max; count++ )
 
 
 
-// If you are calculating with matrices, which
-// happens in more optimized code in later
-// versions, then you'd calculate all
-// derivatives at once on a mini-batch.
-// You can't change any weights in the network
-// while you are doing that.  So with the
-// matrix results for a whole mini-batch,
-// you'd average rates of change for that
-// batch.
-
-
-
-
 private void adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
-                    float stepSize )
+                    float rate )
 {
 // dError / dW = activation * delta
 
@@ -520,20 +490,16 @@ for( int countFrom = 1; countFrom < maxFrom;
             countToSet < maxToSet; countToSet++ )
     {
 
-    // float delta = toSetLayer.getDeltaAt(
-    //                          countToSet );
-    float delta = toSetLayer.getDeltaAvgAt(
-                                countToSet );
-    delta = delta / batchSize;
-
+    float delta = toSetLayer.getDeltaAt(
+                              countToSet );
+    // float delta = toSetLayer.getDeltaAvgAt(
+    //                            countToSet );
+    // delta = delta / batchSize;
 
     float weight = toSetLayer.getWeight(
                  countToSet, countFrom );
 
-    float wAdjust = stepSize * delta * act;
-    // mData.showStatus( "wAdjust: " +
-    //               wAdjust.ToString( "N4" ));
-
+    float wAdjust = rate * delta * act;
     weight += wAdjust;
     toSetLayer.setWeight( countToSet, countFrom,
                           weight );
