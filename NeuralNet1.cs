@@ -116,7 +116,7 @@ int startRow = 0;
 // while( true )
 
 
-for( int batchCount = 0; batchCount < 100;
+for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
   if( !makeOneBatch( startRow,
@@ -198,7 +198,7 @@ for( int count = 0; count < (batchSize / 2);
   // That makes the input very _un_ complex.
   // If the input is too complex then it
   // can't figure out the weights.
-  copyVec.clearTo( 0 );
+  // copyVec.clearTo( 0 );
 
   batchArray.appendVecCopy( copyVec );
   labelVec.setVal( 1, 0 ); // Democrat
@@ -209,7 +209,7 @@ for( int count = 0; count < (batchSize / 2);
 
   // Test:
   // Make it all ones for repub input.
-  // copyVec.clearTo( 1 );
+  copyVec.clearTo( 1 );
 
   batchArray.appendVecCopy( copyVec );
 
@@ -335,7 +335,7 @@ VectorFlt errorVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
 labelArray.copyVecAt( labelVec, row );
 
-// if( row == 0 )
+if( row < 2 )
   {
   float showAct1 = actVec.getVal( 1 );
   float showAct2 = actVec.getVal( 2 );
