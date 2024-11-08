@@ -158,6 +158,29 @@ return true;
 
 
 
+private void setTestVec( VectorFlt testVec,
+                            int testLength,
+                            string pattern )
+{
+string testStr = pattern;
+
+// while( true )
+for( int count = 0; count < testLength; count++ )
+  {
+  testStr += pattern;
+  if( testStr.Length >= testLength )
+    break;
+
+  }
+
+// mData.showStatus( "Test Vec: " + testStr );
+
+testVec.setFromString( testStr );
+}
+
+
+
+
 private bool makeOneBatch( int startAt,
                    VectorArray demParagArray,
                    VectorArray repubParagArray )
@@ -180,6 +203,18 @@ labelArray.clearLastAppend();
 
 VectorFlt copyVec = new VectorFlt( mData );
 VectorFlt labelVec = new VectorFlt( mData );
+VectorFlt testDemVec = new VectorFlt( mData );
+VectorFlt testRepubVec = new VectorFlt( mData );
+
+testDemVec.setSize( columns );
+testRepubVec.setSize( columns );
+
+
+setTestVec( testDemVec, columns,
+                              "MSNBC News " );
+setTestVec( testRepubVec, columns,
+                              "Fox News " );
+
 
 labelVec.setSize( 3 );
 labelVec.setVal( 0, 0 ); // Bias is not used.
@@ -194,22 +229,22 @@ for( int count = 0; count < (batchSize / 2);
   demParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  // Make it all zeros for dem input.
-  // That makes the input very _un_ complex.
-  // If the input is too complex then it
-  // can't figure out the weights.
-  // copyVec.clearTo( 0 );
+  copyVec.clearTo( 0 );
+======
+  // copyVec.copy( testDemVec );
 
   batchArray.appendVecCopy( copyVec );
   labelVec.setVal( 1, 0 ); // Democrat
   labelVec.setVal( 2, 1 );
   labelArray.appendVecCopy( labelVec );
 
+
+  // Repub:
   repubParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  // Make it all ones for repub input.
-  copyVec.clearTo( 1 );
+  // copyVec.clearTo( 1 );
+  copyVec.copy( testRepubVec );
 
   batchArray.appendVecCopy( copyVec );
 
@@ -235,6 +270,9 @@ return true;
 
 private void setupNetTopology( int columns )
 {
+// Check WebPageDct.neuralSearch() for the
+// minimum story text length.
+
 // Plus 1 for the bias at zero.
 int layerSize = columns + 1;
 
