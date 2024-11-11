@@ -111,11 +111,7 @@ private bool oneEpoch(
 
 int startRow = 0;
 
-// Make this batchCount go to a big number
-// so it just runs out of batches.
-// while( true )
-
-
+// while( there is still data... )
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
@@ -193,6 +189,11 @@ if( lastRepubRow < lastRow )
   lastRow = lastRepubRow;
 
 int columns = demParagArray.getColumns();
+if( columns != repubParagArray.getColumns())
+  {
+  throw new Exception( 
+          "dem and repub columns not equal." );
+  }
 
 // If the size is not already set.
 batchArray.setSize( batchSize + 2, columns );
@@ -209,12 +210,10 @@ VectorFlt testRepubVec = new VectorFlt( mData );
 testDemVec.setSize( columns );
 testRepubVec.setSize( columns );
 
-
 setTestVec( testDemVec, columns,
                               "MSNBC News " );
 setTestVec( testRepubVec, columns,
                               "Fox News " );
-
 
 labelVec.setSize( 3 );
 labelVec.setVal( 0, 0 ); // Bias is not used.
@@ -229,9 +228,8 @@ for( int count = 0; count < (batchSize / 2);
   demParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  copyVec.clearTo( 0 );
-======
-  // copyVec.copy( testDemVec );
+  // copyVec.clearTo( 0 );
+  copyVec.copy( testDemVec );
 
   batchArray.appendVecCopy( copyVec );
   labelVec.setVal( 1, 0 ); // Democrat
@@ -243,8 +241,9 @@ for( int count = 0; count < (batchSize / 2);
   repubParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  // copyVec.clearTo( 1 );
-  copyVec.copy( testRepubVec );
+=====
+  copyVec.clearTo( 1 );
+  // copyVec.copy( testRepubVec );
 
   batchArray.appendVecCopy( copyVec );
 
@@ -281,6 +280,7 @@ inputLayer.setSize( layerSize );
 // The weights aren't used here.
 inputLayer.setWeightArSize( 1 );
 
+====== Bigger hidden layer?
 hiddenLayer.setSize( layerSize );
 hiddenLayer.setWeightArSize( layerSize );
 
