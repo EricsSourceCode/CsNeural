@@ -89,6 +89,8 @@ for( int count = 0; count < epoch; count++ )
 
   mData.showStatus( "Epoch: " + count );
 
+  // Also do oneEpochAvg().
+
   if( !oneEpoch( demParagArray,
                  repubParagArray ))
     return; // No more batches.
@@ -99,7 +101,8 @@ mData.showStatus( "NeuralNet.test() end." );
 }
 
 
-
+// Copy this function to do it as an average
+// for a batch.  oneEpochAvg()
 
 private bool oneEpoch(
                   VectorArray demParagArray,
@@ -107,11 +110,12 @@ private bool oneEpoch(
 {
 // Do all batches for one epoch.
 
-// Start for the entire set of data.
+// Start row for the entire set of data.
 
 int startRow = 0;
 
 // while( there is still data... )
+
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
@@ -129,20 +133,30 @@ for( int batchCount = 0; batchCount < 1000;
     // From the row in the batch array.
     setInputRow( rowCount );
     forwardPass();
-    backprop( rowCount );
+    if( !backprop( rowCount ))
+      return false;
 
     // Not doing an average for the batch here.
     // }
 
+    // Adjusting weights and biases comes
+    // after the backProp() gets the
+    // delta values.
+
     adjustBias( outputLayer, learnRate );
     adjustBias( hiddenLayer, learnRate );
-    adjustWeights( hiddenLayer, // fromLayer
-                   outputLayer, // toSetLayer
-                   learnRate );
 
-    adjustWeights( inputLayer, // fromLayer
+    if( !adjustWeights(
+                   hiddenLayer, // fromLayer
+                   outputLayer, // toSetLayer
+                   learnRate ))
+      return false;
+
+    if( !adjustWeights( inputLayer, // fromLayer
                    hiddenLayer, // toSetLayer
-                   learnRate );
+                   learnRate ))
+      return false;
+
     }
 
   startRow += batchSize;
@@ -152,6 +166,11 @@ return true;
 }
 
 
+
+====
+All Ds?  All Rs?  All zeros in activation
+makes weights irrelevant.  So it is just bias
+So bias must be right?
 
 
 private void setTestVec( VectorFlt testVec,
@@ -191,7 +210,7 @@ if( lastRepubRow < lastRow )
 int columns = demParagArray.getColumns();
 if( columns != repubParagArray.getColumns())
   {
-  throw new Exception( 
+  throw new Exception(
           "dem and repub columns not equal." );
   }
 
@@ -241,7 +260,6 @@ for( int count = 0; count < (batchSize / 2);
   repubParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-=====
   copyVec.clearTo( 1 );
   // copyVec.copy( testRepubVec );
 
@@ -274,20 +292,20 @@ private void setupNetTopology( int columns )
 
 // Plus 1 for the bias at zero.
 int layerSize = columns + 1;
-
+int hiddenSize = layerSize * 2;
 inputLayer.setSize( layerSize );
 
 // The weights aren't used here.
 inputLayer.setWeightArSize( 1 );
 
-====== Bigger hidden layer?
-hiddenLayer.setSize( layerSize );
+
+hiddenLayer.setSize( hiddenSize );
 hiddenLayer.setWeightArSize( layerSize );
 
 // One for the bias at zero, and two more.
 outputLayer.setSize( 3 );
 
-outputLayer.setWeightArSize( layerSize );
+outputLayer.setWeightArSize( hiddenSize );
 
 errorOutVec.setSize( 3 );
 }
@@ -353,18 +371,23 @@ outputLayer.calcActSigmoid();
 
 
 
-private void backprop( int row )
+private bool backprop( int row )
 {
 // The row in the batch array.
 
-setDeltaAtOutput( row );
-setDeltaAtHidden( outputLayer,
-                  hiddenLayer, row );
+if( !setDeltaAtOutput( row ))
+  return false;
+
+if( !setDeltaAtHidden( outputLayer,
+                       hiddenLayer, row ))
+  return false;
+
+return true;
 }
 
 
 
-private void setDeltaAtOutput( int row )
+private bool setDeltaAtOutput( int row )
 {
 VectorFlt actVec = new VectorFlt( mData );
 VectorFlt labelVec = new VectorFlt( mData );
@@ -423,12 +446,16 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 // outputLayer.addToDeltaAvgAt( 1, delta1 );
 // outputLayer.addToDeltaAvgAt( 2, delta2 );
+
+return true;
 }
 
 
 
+// setDeltaAtHidden( outputLayer,
+//                   hiddenLayer, row )
 
-private void setDeltaAtHidden(
+private bool setDeltaAtHidden(
                       NeuronLayer1 fromLayer,
                       NeuronLayer1 toSetLayer,
                       int row )
@@ -442,6 +469,14 @@ int maxFrom = fromLayer.getSize();
 for( int weightAt = 1;
            weightAt < maxToSet; weightAt++ )
   {
+  // Big exponential loops.
+
+  // if( (weightAt % 10) == 0 )
+    {
+    if( !mData.checkEvents())
+      return false;
+    }
+
   // weightAt is also the index of the neuron
   // in the layer that is about to be set.
 
@@ -454,6 +489,13 @@ for( int weightAt = 1;
                                   fromNeuron );
 
     // Here is a Matrix.  Row and column.
+
+    // If the fromNeuron is in the output
+    // layer, then weightAt refers to which
+    // neuron the weight refers to in the
+    // hidden layer.  This would be throwing
+    // an exception if the rows/columns
+    // were backwards here.
 
     float weight = fromLayer.getWeight(
                        fromNeuron, weightAt );
@@ -489,6 +531,8 @@ for( int weightAt = 1;
   // toSetLayer.addToDeltaAvgAt( weightAt,
   //                            sumToSet );
   }
+
+return true;
 }
 
 
@@ -517,7 +561,7 @@ for( int count = 1; count < max; count++ )
 
 
 
-private void adjustWeights(
+private bool adjustWeights(
                     NeuronLayer1 fromLayer,
                     NeuronLayer1 toSetLayer,
                     float rate )
@@ -530,7 +574,13 @@ int maxToSet = toSetLayer.getSize();
 for( int countFrom = 1; countFrom < maxFrom;
                         countFrom++ )
   {
-  // The is the activation of the neuron
+  if( (countFrom % 10) == 0 )
+    {
+    if( !mData.checkEvents())
+      return false;
+    }
+
+  // The activation of the neuron
   // in the from layer, the input layer,
   // which is going to output to the
   // toSet neuron through the weight.
@@ -541,12 +591,15 @@ for( int countFrom = 1; countFrom < maxFrom;
   for( int countToSet = 1;
             countToSet < maxToSet; countToSet++ )
     {
-
     float delta = toSetLayer.getDeltaAt(
                               countToSet );
     // float delta = toSetLayer.getDeltaAvgAt(
     //                            countToSet );
     // delta = delta / batchSize;
+
+    // CountToSet is the neuron, countFrom
+    // is where the weight is in that
+    // neuron's array.
 
     float weight = toSetLayer.getWeight(
                  countToSet, countFrom );
@@ -557,6 +610,8 @@ for( int countFrom = 1; countFrom < maxFrom;
                           weight );
     }
   }
+
+return true;
 }
 
 
