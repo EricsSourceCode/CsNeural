@@ -367,11 +367,10 @@ private bool backprop( int row )
 {
 // The row in the batch array.
 
-if( !setDeltaAtOutput( row ))
+if( !setDeltaForOutput( row ))
   return false;
 
-if( !setDeltaAtHidden( outputLayer,
-                       hiddenLayer, row ))
+if( !setDeltaForHidden())
   return false;
 
 return true;
@@ -379,7 +378,7 @@ return true;
 
 
 
-private bool setDeltaAtOutput( int row )
+private bool setDeltaForOutput( int row )
 {
 VectorFlt actVec = new VectorFlt( mData );
 VectorFlt labelVec = new VectorFlt( mData );
@@ -388,7 +387,7 @@ VectorFlt errorVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
 labelArray.copyVecAt( labelVec, row );
 
-if( row < 2 )
+// if( row < 2 )
   {
   float showAct1 = actVec.getVal( 1 );
   float showAct2 = actVec.getVal( 2 );
@@ -444,85 +443,14 @@ return true;
 
 
 
-// setDeltaAtHidden( outputLayer,
-//                   hiddenLayer, row )
 
-private bool setDeltaAtHidden(
-                      NeuronLayer1 fromLayer,
-                      NeuronLayer1 toSetLayer,
-                      int row )
+private bool setDeltaForHidden()
 {
-int maxToSet = toSetLayer.getSize();
-int maxFrom = fromLayer.getSize();
+if( !hiddenLayer.setDeltaForHidden())
+  return false;
 
-// Start counting at 1 because the bias
-// is the only thing at zero.
-
-for( int weightAt = 1;
-           weightAt < maxToSet; weightAt++ )
-  {
-  // Big exponential loops.
-
-  // if( (weightAt % 10) == 0 )
-    {
-    if( !mData.checkEvents())
-      return false;
-    }
-
-  // weightAt is also the index of the neuron
-  // in the layer that is about to be set.
-
-  float sumToSet = 0;
-
-  for( int fromNeuron = 1;
-           fromNeuron < maxFrom; fromNeuron++ )
-    {
-    float deltaFrom = fromLayer.getDeltaAt(
-                                  fromNeuron );
-
-    // Here is a Matrix.  Row and column.
-
-    // If the fromNeuron is in the output
-    // layer, then weightAt refers to which
-    // neuron the weight refers to in the
-    // hidden layer.  This would be throwing
-    // an exception if the rows/columns
-    // were backwards here.
-
-    float weight = fromLayer.getWeight(
-                       fromNeuron, weightAt );
-
-    // This is the z from the neuron I
-    // am about to set.
-    float z = toSetLayer.getZSumAt( weightAt );
-
-    // If z <= 0 then the output from this
-    // neuron activation would be zero.
-    // So it would have nothing to do
-    // with the output.
-    // If z was <= 0 then derivReLu
-    // would be zero.  So partSum would
-    // be zero.
-
-    // This would be a Hadamard Product for
-    // the vectors:
-    // result.hadamard( weight, deltaFrom ).
-    // Then add the vector for ReLU( z ).
-
-    float partSum = (weight * deltaFrom) *
-                  Activation.derivReLU( z );
-
-    sumToSet += partSum;
-    }
-
-  // Set the delta for the neuron in the
-  // toSetLayer.
-
-  toSetLayer.setDeltaAt( weightAt, sumToSet );
-
-  // toSetLayer.addToDeltaAvgAt( weightAt,
-  //                            sumToSet );
-  }
+// Then the previous one of several hidden
+// layers...
 
 return true;
 }

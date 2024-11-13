@@ -33,13 +33,8 @@ private float delta = 0;
 // private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
-=====
 private NeuronLayer1 prevLayer;
 private NeuronLayer1 nextLayer;
-
-// The weight from this neuron to each
-// neuron in the prevLayer.
-
 private VectorFlt weightVec;
 
 
@@ -57,7 +52,7 @@ weightVec = new VectorFlt( mData );
 }
 
 
-internal void setLayers( 
+internal void setLayers(
                NeuronLayer1 usePrevLayer,
                NeuronLayer1 useNextLayer )
 {

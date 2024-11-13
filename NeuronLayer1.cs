@@ -110,7 +110,7 @@ for( int count = 1; count < max; count++ )
 */
 
 
-internal void setLayers( 
+internal void setLayers(
                      NeuronLayer1 usePrevLayer,
                      NeuronLayer1 useNextLayer )
 {
@@ -349,6 +349,63 @@ RangeT.test( where, 1, weightSize - 1,
 neuronAr[neuron].setWeight( where, setTo );
 }
 
+
+
+internal bool setDeltaForHidden()
+{
+int max = getSize();
+int maxNext = nextLayer.getSize();
+
+// Start counting at 1 because the bias
+// is the only thing at zero.
+
+// Big exponential loops.
+
+// countT is the neuron in this layer.
+
+for( int countT = 1; countT < max; countT++ )
+  {
+  if( (countT % 10) == 0 )
+    {
+    if( !mData.checkEvents())
+      return false;
+    }
+
+
+  float sumToSet = 0;
+
+  // countNext is the neuron in the next layer.
+
+  for( int countNext = 1;
+           countNext < maxNext; countNext++ )
+    {
+    float deltaNext = nextLayer.getDeltaAt(
+                                countNext );
+
+    // Here is a Matrix.  Row and column.
+
+    float weight = nextLayer.getWeight(
+                          countNext, countT );
+
+    float z = nextLayer.getZSumAt( countNext );
+
+    // deriveReLU() if for the neuron in this
+    // layer.
+
+    float partSum = (weight * deltaNext) *
+                    Activation.derivReLU( z );
+
+    sumToSet += partSum;
+    }
+
+  setDeltaAt( countT, sumToSet );
+
+  // toSetLayer.addToDeltaAvgAt( countT,
+  //                            sumToSet );
+  }
+
+return true;
+}
 
 
 
