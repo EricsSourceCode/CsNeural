@@ -20,10 +20,9 @@ using System;
 // By convention, the weight at index
 // zero is the bias.  And so neurons
 // start at index 1 in order to match
-// up with those weights.  And so later
+// up with those weights.  So later
 // math optimizations (like GPU math)
-// matches up indexes.
-// The neuron at index 0 is not used.
+// matches up indexes with this.
 
 
 
@@ -31,6 +30,8 @@ public class NeuronLayer1
 {
 private MainData mData;
 private Neuron1[] neuronAr;
+private NeuronLayer1 prevLayer;
+private NeuronLayer1 nextLayer;
 
 
 
@@ -91,7 +92,7 @@ catch( Exception ) // Except )
 
 
 
-
+/*
 internal void setWeightArSize( int setTo )
 {
 // All of the neurons in this layer have
@@ -106,6 +107,27 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].setWeightVecSize( setTo );
 
 }
+*/
+
+
+internal void setLayers( 
+                     NeuronLayer1 usePrevLayer,
+                     NeuronLayer1 useNextLayer )
+{
+// A layer can be null if it's not there.
+
+prevLayer = usePrevLayer;
+nextLayer = useNextLayer;
+
+int max = neuronAr.Length;
+
+for( int count = 0; count < max; count++ )
+  {
+  neuronAr[count].setLayers( prevLayer,
+                             nextLayer );
+  }
+}
+
 
 
 internal void getActivationVec(
@@ -171,11 +193,11 @@ for( int count = 1; count < max; count++ )
 
 
 
-internal void calcZ( NeuronLayer1 prevLayer )
+internal void calcZ()
 {
 int max = neuronAr.Length;
 for( int count = 1; count < max; count++ )
-  neuronAr[count].calcZ( prevLayer );
+  neuronAr[count].calcZ();
 
 }
 

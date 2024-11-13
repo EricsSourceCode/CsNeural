@@ -17,7 +17,8 @@ using System;
 
 // The weight at index 0 is the standard way
 // of doing the bias.  The activation is fixed
-// at 1 and the weight makes the bias value.
+// at 1 so the weight times 1 makes the
+// bias value.
 
 
 // namespace
@@ -32,9 +33,12 @@ private float delta = 0;
 // private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
+=====
+private NeuronLayer1 prevLayer;
+private NeuronLayer1 nextLayer;
 
 // The weight from this neuron to each
-// neuron in the L - 1 layer.
+// neuron in the prevLayer.
 
 private VectorFlt weightVec;
 
@@ -53,9 +57,20 @@ weightVec = new VectorFlt( mData );
 }
 
 
-internal void setWeightVecSize( int setTo )
+internal void setLayers( 
+               NeuronLayer1 usePrevLayer,
+               NeuronLayer1 useNextLayer )
 {
-weightVec.setSize( setTo );
+// A layer can be null if it's not there.
+
+prevLayer = usePrevLayer;
+nextLayer = useNextLayer;
+
+if( prevLayer == null )
+  weightVec.setSize( 1 );
+else
+  weightVec.setSize( prevLayer.getSize());
+
 }
 
 
@@ -67,7 +82,7 @@ return weightVec.getSize();
 
 
 
-internal float calcZ( NeuronLayer1 prevLayer )
+internal float calcZ()
 {
 int max = weightVec.getSize();
 if( max != prevLayer.getSize())

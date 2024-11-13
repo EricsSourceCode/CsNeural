@@ -167,11 +167,6 @@ return true;
 
 
 
-====
-All Ds?  All Rs?  All zeros in activation
-makes weights irrelevant.  So it is just bias
-So bias must be right?
-
 
 private void setTestVec( VectorFlt testVec,
                             int testLength,
@@ -293,19 +288,16 @@ private void setupNetTopology( int columns )
 // Plus 1 for the bias at zero.
 int layerSize = columns + 1;
 int hiddenSize = layerSize * 2;
+
 inputLayer.setSize( layerSize );
-
-// The weights aren't used here.
-inputLayer.setWeightArSize( 1 );
-
-
 hiddenLayer.setSize( hiddenSize );
-hiddenLayer.setWeightArSize( layerSize );
 
 // One for the bias at zero, and two more.
 outputLayer.setSize( 3 );
 
-outputLayer.setWeightArSize( hiddenSize );
+inputLayer.setLayers( null, hiddenLayer );
+hiddenLayer.setLayers( inputLayer, outputLayer );
+outputLayer.setLayers( hiddenLayer, null );
 
 errorOutVec.setSize( 3 );
 }
@@ -362,10 +354,10 @@ for( int count = 0; count < col; count++ )
 
 private void forwardPass()
 {
-hiddenLayer.calcZ( inputLayer );
+hiddenLayer.calcZ();
 hiddenLayer.calcActReLU();
 
-outputLayer.calcZ( hiddenLayer );
+outputLayer.calcZ();
 outputLayer.calcActSigmoid();
 }
 
