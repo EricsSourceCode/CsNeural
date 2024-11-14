@@ -374,6 +374,9 @@ for( int countT = 1; countT < max; countT++ )
 
   float sumToSet = 0;
 
+  // The z for this layer.
+  float z = getZSumAt( countT );
+
   // countNext is the neuron in the next layer.
 
   for( int countNext = 1;
@@ -387,14 +390,10 @@ for( int countT = 1; countT < max; countT++ )
     float weight = nextLayer.getWeight(
                           countNext, countT );
 
-    float z = nextLayer.getZSumAt( countNext );
-
-    // deriveReLU() if for the neuron in this
-    // layer.
-
+    // Using the z in this layer.
     float partSum = (weight * deltaNext) *
                         Activ.drvSigmoid( z );
-                        // drvReLU()
+                        // drvReLU( z )
     sumToSet += partSum;
     }
 

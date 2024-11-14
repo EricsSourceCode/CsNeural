@@ -27,7 +27,7 @@ private MainData mData;
 // Different layers might have different
 // learning rates.
 
-private float learnRate = 0.1F;
+private float learnRate = 0.001F;
 
 private int batchSize = 50;
 
@@ -54,6 +54,7 @@ mData = useMainData;
 inputLayer = new NeuronLayer1( mData );
 hiddenLayer = new NeuronLayer1( mData );
 outputLayer = new NeuronLayer1( mData );
+
 errorOutVec = new VectorFlt( mData );
 labelArray = new VectorArray( mData );
 batchArray = new VectorArray( mData );
@@ -101,6 +102,7 @@ mData.showStatus( "NeuralNet.test() end." );
 }
 
 
+
 // Copy this function to do it as an average
 // for a batch.  oneEpochAvg()
 
@@ -140,7 +142,7 @@ for( int batchCount = 0; batchCount < 1000;
     // }
 
     // Adjusting weights and biases comes
-    // after the backProp() gets the
+    // after the backProp() sets the
     // delta values.
 
     adjustBias( outputLayer, learnRate );
@@ -268,7 +270,7 @@ for( int count = 0; count < (batchSize / 2);
   }
 
 if( labelArray.getLastAppend() != batchArray.
-                   getLastAppend())
+                           getLastAppend())
   {
   throw new Exception(
              "label last != batch last" );
@@ -432,6 +434,10 @@ float delta1 = dErrorA1 *
                       Activ.drvSigmoid( z1 );
 float delta2 = dErrorA2 *
                       Activ.drvSigmoid( z2 );
+
+// Delta is on the z side of the activation
+// function.  It is the z for this output
+// layer.
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
