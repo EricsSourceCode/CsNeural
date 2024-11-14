@@ -27,7 +27,7 @@ private MainData mData;
 // Different layers might have different
 // learning rates.
 
-private float learnRate = 0.001F;
+private float learnRate = 0.002F;
 
 private int batchSize = 50;
 
@@ -77,7 +77,7 @@ if( columns != repubParagArray.getColumns() )
 // One epoch is one complete pass through
 // the entire training set.
 
-int epoch = 2;
+int epoch = 20;
 
 setupNetTopology( columns );
 
@@ -257,8 +257,8 @@ for( int count = 0; count < (batchSize / 2);
   repubParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  copyVec.clearTo( 1 );
-  // copyVec.copy( testRepubVec );
+  // copyVec.clearTo( 1 );
+  copyVec.copy( testRepubVec );
 
   batchArray.appendVecCopy( copyVec );
 
@@ -390,7 +390,7 @@ VectorFlt errorVec = new VectorFlt( mData );
 outputLayer.getActivationVec( actVec );
 labelArray.copyVecAt( labelVec, row );
 
-// if( row < 2 )
+if( row < 2 )
   {
   float showAct1 = actVec.getVal( 1 );
   float showAct2 = actVec.getVal( 2 );
