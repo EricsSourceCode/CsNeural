@@ -212,7 +212,7 @@ for( int count = 1; count < max; count++ )
 }
 
 
-
+/*
 internal void calcActReLU()
 {
 int max = neuronAr.Length;
@@ -220,7 +220,7 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].calcActReLU();
 
 }
-
+*/
 
 
 // internal void clearAllDeltaAvg()
@@ -393,8 +393,8 @@ for( int countT = 1; countT < max; countT++ )
     // layer.
 
     float partSum = (weight * deltaNext) *
-                    Activation.derivReLU( z );
-
+                        Activ.drvSigmoid( z );
+                        // drvReLU()
     sumToSet += partSum;
     }
 

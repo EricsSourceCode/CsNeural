@@ -355,7 +355,8 @@ for( int count = 0; count < col; count++ )
 private void forwardPass()
 {
 hiddenLayer.calcZ();
-hiddenLayer.calcActReLU();
+// hiddenLayer.calcActReLU();
+hiddenLayer.calcActSigmoid();
 
 outputLayer.calcZ();
 outputLayer.calcActSigmoid();
@@ -428,9 +429,9 @@ float dErrorA1 = errorVec.getVal( 1 );
 float dErrorA2 = errorVec.getVal( 2 );
 
 float delta1 = dErrorA1 *
-                 Activation.derivSigmoid( z1 );
+                      Activ.drvSigmoid( z1 );
 float delta2 = dErrorA2 *
-                 Activation.derivSigmoid( z2 );
+                      Activ.drvSigmoid( z2 );
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );

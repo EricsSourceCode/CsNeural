@@ -104,18 +104,19 @@ return zSum;
 
 internal float calcActSigmoid()
 {
-activation = Activation.sigmoid( zSum );
+activation = Activ.sigmoid( zSum );
 return activation;
 }
 
 
 
+/*
 internal float calcActReLU()
 {
-activation = Activation.reLU( zSum );
+activation = Activ.reLU( zSum );
 return activation;
 }
-
+*/
 
 
 
