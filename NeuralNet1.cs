@@ -67,6 +67,10 @@ internal void test( VectorArray demParagArray,
 {
 mData.showStatus( "NeuralNet1.test()." );
 
+TimeEC startTime = new TimeEC();
+startTime.setToNow();
+
+
 int columns = demParagArray.getColumns();
 if( columns != repubParagArray.getColumns() )
   {
@@ -77,26 +81,48 @@ if( columns != repubParagArray.getColumns() )
 // One epoch is one complete pass through
 // the entire training set.
 
-int epoch = 20;
+int epoch = 2;
 
 setupNetTopology( columns );
 
 setRandomWeights();
 
+double showMin = 0;
+
 for( int count = 0; count < epoch; count++ )
   {
+  // getHoursToNow()
+  // getSecondsToNow()
+
+  showMin = startTime.getMinutesToNow();
+  mData.showStatus( "Minutes: " +
+                    showMin.ToString( "N2" ) );
+
   if( !mData.checkEvents())
+    {
+    showMin = startTime.getMinutesToNow();
+    mData.showStatus( "Minutes: " +
+                     showMin.ToString( "N2" ) );
     return;
+    }
 
   mData.showStatus( "Epoch: " + count );
 
   // Also do oneEpochAvg().
 
-  if( !oneEpoch( demParagArray,
-                 repubParagArray ))
-    return; // No more batches.
-
+  oneEpoch( demParagArray, repubParagArray );
+  if( mData.getCancelled())
+    {
+    showMin = startTime.getMinutesToNow();
+    mData.showStatus( "Minutes: " +
+                    showMin.ToString( "N2" ) );
+    return;
+    }
   }
+
+showMin = startTime.getMinutesToNow();
+mData.showStatus( "Minutes: " +
+                showMin.ToString( "N2" ));
 
 mData.showStatus( "NeuralNet.test() end." );
 }
@@ -106,7 +132,7 @@ mData.showStatus( "NeuralNet.test() end." );
 // Copy this function to do it as an average
 // for a batch.  oneEpochAvg()
 
-private bool oneEpoch(
+private void oneEpoch(
                   VectorArray demParagArray,
                   VectorArray repubParagArray )
 {
@@ -124,7 +150,7 @@ for( int batchCount = 0; batchCount < 1000;
   if( !makeOneBatch( startRow,
                      demParagArray,
                      repubParagArray ))
-    return false; // No more batches.
+    return; // No more batches.
 
   // outputLayer.clearAllDeltaAvg();
   // hiddenLayer.clearAllDeltaAvg();
@@ -135,8 +161,9 @@ for( int batchCount = 0; batchCount < 1000;
     // From the row in the batch array.
     setInputRow( rowCount );
     forwardPass();
-    if( !backprop( rowCount ))
-      return false;
+    backprop( rowCount );
+    if( mData.getCancelled())
+      return;
 
     // Not doing an average for the batch here.
     // }
@@ -148,23 +175,24 @@ for( int batchCount = 0; batchCount < 1000;
     adjustBias( outputLayer, learnRate );
     adjustBias( hiddenLayer, learnRate );
 
-    if( !adjustWeights(
-                   hiddenLayer, // fromLayer
+    adjustWeights( hiddenLayer, // fromLayer
                    outputLayer, // toSetLayer
-                   learnRate ))
-      return false;
+                   learnRate );
 
-    if( !adjustWeights( inputLayer, // fromLayer
+    if( mData.getCancelled())
+      return;
+
+    adjustWeights( inputLayer, // fromLayer
                    hiddenLayer, // toSetLayer
-                   learnRate ))
-      return false;
+                   learnRate );
+
+    if( mData.getCancelled())
+      return;
 
     }
 
   startRow += batchSize;
   }
-
-return true;
 }
 
 
