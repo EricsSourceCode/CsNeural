@@ -22,8 +22,6 @@ public class NeuralNet1
 {
 private MainData mData;
 
-// The Greek letter Eta is often used
-// to represent the learning rate.
 // Different layers might have different
 // learning rates.
 
@@ -91,9 +89,6 @@ double showMin = 0;
 
 for( int count = 0; count < epoch; count++ )
   {
-  // getHoursToNow()
-  // getSecondsToNow()
-
   showMin = startTime.getMinutesToNow();
   mData.showStatus( "Minutes: " +
                     showMin.ToString( "N2" ) );
@@ -162,6 +157,7 @@ for( int batchCount = 0; batchCount < 1000;
     setInputRow( rowCount );
     forwardPass();
     backprop( rowCount );
+
     if( mData.getCancelled())
       return;
 
@@ -172,19 +168,11 @@ for( int batchCount = 0; batchCount < 1000;
     // after the backProp() sets the
     // delta values.
 
-    adjustBias( outputLayer, learnRate );
-    adjustBias( hiddenLayer, learnRate );
+    outputLayer.adjustBias( learnRate );
+    hiddenLayer.adjustBias( learnRate );
 
-    adjustWeights( hiddenLayer, // fromLayer
-                   outputLayer, // toSetLayer
-                   learnRate );
-
-    if( mData.getCancelled())
-      return;
-
-    adjustWeights( inputLayer, // fromLayer
-                   hiddenLayer, // toSetLayer
-                   learnRate );
+    outputLayer.adjustWeights( learnRate );
+    hiddenLayer.adjustWeights( learnRate );
 
     if( mData.getCancelled())
       return;
@@ -272,7 +260,6 @@ for( int count = 0; count < (batchSize / 2);
   demParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  // copyVec.clearTo( 0 );
   copyVec.copy( testDemVec );
 
   batchArray.appendVecCopy( copyVec );
@@ -285,7 +272,6 @@ for( int count = 0; count < (batchSize / 2);
   repubParagArray.copyVecAt( copyVec, copyAt );
 
   // Test:
-  // copyVec.clearTo( 1 );
   copyVec.copy( testRepubVec );
 
   batchArray.appendVecCopy( copyVec );
@@ -356,6 +342,7 @@ outputLayer.setRandomWeights( randMax );
 
 
 
+
 private void setInputRow( int row )
 {
 // Set the input layer neurons (activation
@@ -385,7 +372,6 @@ for( int count = 0; count < col; count++ )
 private void forwardPass()
 {
 hiddenLayer.calcZ();
-// hiddenLayer.calcActReLU();
 hiddenLayer.calcActSigmoid();
 
 outputLayer.calcZ();
@@ -394,22 +380,17 @@ outputLayer.calcActSigmoid();
 
 
 
-private bool backprop( int row )
+private void backprop( int row )
 {
 // The row in the batch array.
 
-if( !setDeltaForOutput( row ))
-  return false;
-
-if( !setDeltaForHidden())
-  return false;
-
-return true;
+setDeltaForOutput( row );
+setDeltaForHidden();
 }
 
 
 
-private bool setDeltaForOutput( int row )
+private void setDeltaForOutput( int row )
 {
 VectorFlt actVec = new VectorFlt( mData );
 VectorFlt labelVec = new VectorFlt( mData );
@@ -472,45 +453,18 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 // outputLayer.addToDeltaAvgAt( 1, delta1 );
 // outputLayer.addToDeltaAvgAt( 2, delta2 );
-
-return true;
 }
 
 
 
 
-private bool setDeltaForHidden()
+private void setDeltaForHidden()
 {
-if( !hiddenLayer.setDeltaForHidden())
-  return false;
+hiddenLayer.setDeltaForHidden();
 
 // Then the previous one of several hidden
 // layers...
 
-return true;
-}
-
-
-
-
-private void adjustBias( NeuronLayer1 layer,
-                         float rate )
-{
-// dCost / dBias = delta
-
-int max = layer.getSize();
-
-for( int count = 1; count < max; count++ )
-  {
-  float delta = layer.getDeltaAt( count );
-  // float delta = layer.getDeltaAvgAt( count );
-  // delta = delta / batchSize;
-
-  float bias = layer.getBias( count );
-  float biasAdj = delta * rate;
-  bias += biasAdj;
-  layer.setBias( count, bias );
-  }
 }
 
 

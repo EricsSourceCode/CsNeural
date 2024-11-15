@@ -408,4 +408,69 @@ return true;
 
 
 
+internal void adjustBias( float rate )
+{
+// dCost / dBias = delta
+
+int max = getSize();
+
+for( int count = 1; count < max; count++ )
+  {
+  // The delta for this neuron and the
+  // bias for this neuron.
+
+  float delta = getDeltaAt( count );
+  // float delta = layer.getDeltaAvgAt( count );
+  // delta = delta / batchSize;
+
+  // ======
+  // A product for these two vectors.
+
+  float bias = getBias( count );
+  float biasAdj = delta * rate;
+  bias += biasAdj;
+  setBias( count, bias );
+  }
+}
+
+
+
+
+internal void adjustWeights( float rate )
+{
+// dError / dW = activation * delta
+
+int maxPrev = prevLayer.getSize();
+int max = getSize();
+
+for( int countPrev = 1; countPrev < maxPrev;
+                        countPrev++ )
+  {
+  if( (countPrev % 10) == 0 )
+    {
+    if( !mData.checkEvents())
+      return;
+    }
+
+  float act = prevLayer.getActivationAt(
+                                   countPrev );
+
+  for( int count = 1; count < max; count++ )
+    {
+    float delta = getDeltaAt( count );
+    // float delta = getDeltaAvgAt( count );
+    // delta = delta / batchSize;
+
+    float weight = getWeight( count,
+                              countPrev );
+
+    float wAdjust = rate * delta * act;
+    weight += wAdjust;
+    setWeight( count, countPrev, weight );
+    }
+  }
+}
+
+
+
 } // Class
