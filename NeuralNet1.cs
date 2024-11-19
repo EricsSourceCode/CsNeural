@@ -30,7 +30,8 @@ private float learnRate = 0.002F;
 private int batchSize = 50;
 
 private NeuronLayer1 inputLayer;
-private NeuronLayer1 hiddenLayer;
+private NeuronLayer1 hiddenLayer1;
+// private NeuronLayer1 hiddenLayer2;
 private NeuronLayer1 outputLayer;
 private VectorFlt errorOutVec;
 private VectorArray labelArray;
@@ -50,7 +51,8 @@ internal NeuralNet1( MainData useMainData )
 mData = useMainData;
 
 inputLayer = new NeuronLayer1( mData );
-hiddenLayer = new NeuronLayer1( mData );
+hiddenLayer1 = new NeuronLayer1( mData );
+// hiddenLayer2 = new NeuronLayer1( mData );
 outputLayer = new NeuronLayer1( mData );
 
 errorOutVec = new VectorFlt( mData );
@@ -169,10 +171,12 @@ for( int batchCount = 0; batchCount < 1000;
     // delta values.
 
     outputLayer.adjustBias( learnRate );
-    hiddenLayer.adjustBias( learnRate );
+    hiddenLayer1.adjustBias( learnRate );
+    // hiddenLayer2.adjustBias( learnRate );
 
     outputLayer.adjustWeights( learnRate );
-    hiddenLayer.adjustWeights( learnRate );
+    hiddenLayer1.adjustWeights( learnRate );
+    // hiddenLayer2.adjustWeights( learnRate );
 
     if( mData.getCancelled())
       return;
@@ -306,14 +310,21 @@ int layerSize = columns + 1;
 int hiddenSize = layerSize * 2;
 
 inputLayer.setSize( layerSize );
-hiddenLayer.setSize( hiddenSize );
+hiddenLayer1.setSize( hiddenSize );
+// hiddenLayer2.setSize( hiddenSize );
 
 // One for the bias at zero, and two more.
 outputLayer.setSize( 3 );
 
-inputLayer.setLayers( null, hiddenLayer );
-hiddenLayer.setLayers( inputLayer, outputLayer );
-outputLayer.setLayers( hiddenLayer, null );
+inputLayer.setLayers( null, hiddenLayer1 );
+hiddenLayer1.setLayers( inputLayer, 
+                        outputLayer );
+                        // hiddenLayer2 );
+
+// hiddenLayer2.setLayers( hiddenLayer1,
+//                         outputLayer );
+
+outputLayer.setLayers( hiddenLayer1, null );
 
 errorOutVec.setSize( 3 );
 }
@@ -336,7 +347,8 @@ mData.showStatus( "randMax: " +
 // The input layer doesn't use weights.
 // inputLayer.setRandomWeights()
 
-hiddenLayer.setRandomWeights( randMax );
+hiddenLayer1.setRandomWeights( randMax );
+// hiddenLayer2.setRandomWeights( randMax );
 outputLayer.setRandomWeights( randMax );
 }
 
@@ -371,8 +383,11 @@ for( int count = 0; count < col; count++ )
 
 private void forwardPass()
 {
-hiddenLayer.calcZ();
-hiddenLayer.calcActSigmoid();
+hiddenLayer1.calcZ();
+hiddenLayer1.calcActSigmoid();
+
+// hiddenLayer2.calcZ();
+// hiddenLayer2.calcActSigmoid();
 
 outputLayer.calcZ();
 outputLayer.calcActSigmoid();
@@ -460,70 +475,14 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 private void setDeltaForHidden()
 {
-hiddenLayer.setDeltaForHidden();
+// The later layer goes first.
 
-// Then the previous one of several hidden
-// layers...
-
-}
-
-
-
-
-private bool adjustWeights(
-                    NeuronLayer1 fromLayer,
-                    NeuronLayer1 toSetLayer,
-                    float rate )
-{
-// dError / dW = activation * delta
-
-int maxFrom = fromLayer.getSize();
-int maxToSet = toSetLayer.getSize();
-
-for( int countFrom = 1; countFrom < maxFrom;
-                        countFrom++ )
-  {
-  if( (countFrom % 10) == 0 )
-    {
-    if( !mData.checkEvents())
-      return false;
-    }
-
-  // The activation of the neuron
-  // in the from layer, the input layer,
-  // which is going to output to the
-  // toSet neuron through the weight.
-
-  float act = fromLayer.
-               getActivationAt( countFrom );
-
-  for( int countToSet = 1;
-            countToSet < maxToSet; countToSet++ )
-    {
-    float delta = toSetLayer.getDeltaAt(
-                              countToSet );
-    // float delta = toSetLayer.getDeltaAvgAt(
-    //                            countToSet );
-    // delta = delta / batchSize;
-
-    // CountToSet is the neuron, countFrom
-    // is where the weight is in that
-    // neuron's array.
-
-    float weight = toSetLayer.getWeight(
-                 countToSet, countFrom );
-
-    float wAdjust = rate * delta * act;
-    weight += wAdjust;
-    toSetLayer.setWeight( countToSet, countFrom,
-                          weight );
-    }
-  }
-
-return true;
+// hiddenLayer2.setDeltaForHidden();
+hiddenLayer1.setDeltaForHidden();
 }
 
 
 
 
 } // Class
+
