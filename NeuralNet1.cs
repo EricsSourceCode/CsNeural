@@ -27,15 +27,12 @@ private MainData mData;
 
 private float learnRate = 0.002F;
 
-private int batchSize = 50;
-
+private Batch batch;
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer1;
 // private NeuronLayer1 hiddenLayer2;
 private NeuronLayer1 outputLayer;
 private VectorFlt errorOutVec;
-private VectorArray labelArray;
-private VectorArray batchArray;
 
 
 
@@ -56,8 +53,7 @@ hiddenLayer1 = new NeuronLayer1( mData );
 outputLayer = new NeuronLayer1( mData );
 
 errorOutVec = new VectorFlt( mData );
-labelArray = new VectorArray( mData );
-batchArray = new VectorArray( mData );
+batch = new Batch( mData );
 }
 
 
@@ -141,10 +137,12 @@ int startRow = 0;
 
 // while( there is still data... )
 
+int batchSize = batch.getSize();
+
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
-  if( !makeOneBatch( startRow,
+  if( !batch.makeOneBatch( startRow,
                      demParagArray,
                      repubParagArray ))
     return; // No more batches.
@@ -190,116 +188,6 @@ for( int batchCount = 0; batchCount < 1000;
 
 
 
-private void setTestVec( VectorFlt testVec,
-                            int testLength,
-                            string pattern )
-{
-string testStr = pattern;
-
-// while( true )
-for( int count = 0; count < testLength; count++ )
-  {
-  testStr += pattern;
-  if( testStr.Length >= testLength )
-    break;
-
-  }
-
-// mData.showStatus( "Test Vec: " + testStr );
-
-testVec.setFromString( testStr );
-}
-
-
-
-
-private bool makeOneBatch( int startAt,
-                   VectorArray demParagArray,
-                   VectorArray repubParagArray )
-{
-int copyAt = startAt;
-int lastRow = demParagArray.getLastAppend();
-int lastRepubRow = repubParagArray.
-                          getLastAppend();
-if( lastRepubRow < lastRow )
-  lastRow = lastRepubRow;
-
-int columns = demParagArray.getColumns();
-if( columns != repubParagArray.getColumns())
-  {
-  throw new Exception(
-          "dem and repub columns not equal." );
-  }
-
-// If the size is not already set.
-batchArray.setSize( batchSize + 2, columns );
-labelArray.setSize( batchSize + 2, 3 );
-
-batchArray.clearLastAppend();
-labelArray.clearLastAppend();
-
-VectorFlt copyVec = new VectorFlt( mData );
-VectorFlt labelVec = new VectorFlt( mData );
-VectorFlt testDemVec = new VectorFlt( mData );
-VectorFlt testRepubVec = new VectorFlt( mData );
-
-testDemVec.setSize( columns );
-testRepubVec.setSize( columns );
-
-setTestVec( testDemVec, columns,
-                              "MSNBC News " );
-setTestVec( testRepubVec, columns,
-                              "Fox News " );
-
-labelVec.setSize( 3 );
-labelVec.setVal( 0, 0 ); // Bias is not used.
-
-for( int count = 0; count < (batchSize / 2);
-// for( int count = 0; count < batchSize;
-                                count++ )
-  {
-  if( copyAt >= lastRow )
-    return false; // Not a full batch.
-
-  demParagArray.copyVecAt( copyVec, copyAt );
-
-  // Test:
-  copyVec.copy( testDemVec );
-
-  batchArray.appendVecCopy( copyVec );
-  labelVec.setVal( 1, 0 ); // Democrat
-  labelVec.setVal( 2, 1 );
-  labelArray.appendVecCopy( labelVec );
-
-
-  // Repub:
-  repubParagArray.copyVecAt( copyVec, copyAt );
-
-  // Test:
-  copyVec.copy( testRepubVec );
-
-  batchArray.appendVecCopy( copyVec );
-
-  labelVec.setVal( 1, 1 ); // Republican
-  labelVec.setVal( 2, 0 );
-  labelArray.appendVecCopy( labelVec );
-
-  copyAt++;
-  }
-
-if( labelArray.getLastAppend() != batchArray.
-                           getLastAppend())
-  {
-  throw new Exception(
-             "label last != batch last" );
-  }
-
-return true;
-}
-
-
-
-
 private void setupNetTopology( int columns )
 {
 // Check WebPageDct.neuralSearch() for the
@@ -317,7 +205,7 @@ hiddenLayer1.setSize( hiddenSize );
 outputLayer.setSize( 3 );
 
 inputLayer.setLayers( null, hiddenLayer1 );
-hiddenLayer1.setLayers( inputLayer, 
+hiddenLayer1.setLayers( inputLayer,
                         outputLayer );
                         // hiddenLayer2 );
 
@@ -360,7 +248,7 @@ private void setInputRow( int row )
 // Set the input layer neurons (activation
 // value) from data matrix.
 
-int col = batchArray.getColumns();
+int col = batch.getColumns();
 
 // Plus 1 for the bias at zero.
 int layerSize = col + 1;
@@ -373,7 +261,7 @@ if( layerSize != inputLayer.getSize())
 
 for( int count = 0; count < col; count++ )
   {
-  float val = batchArray.getVal( row, count );
+  float val = batch.getVal( row, count );
   inputLayer.setActivationAt( count + 1, val );
   }
 }
@@ -412,7 +300,7 @@ VectorFlt labelVec = new VectorFlt( mData );
 VectorFlt errorVec = new VectorFlt( mData );
 
 outputLayer.getActivationVec( actVec );
-labelArray.copyVecAt( labelVec, row );
+batch.copyLabelVecAt( labelVec, row );
 
 if( row < 2 )
   {
@@ -485,4 +373,3 @@ hiddenLayer1.setDeltaForHidden();
 
 
 } // Class
-
