@@ -19,6 +19,10 @@ using System;
 
 // A mini batch.
 
+// There are a lot of different ways to make
+// a batch.
+
+
 
 public class Batch
 {
@@ -65,7 +69,7 @@ return batchArray.getColumns();
 }
 
 
-internal void copyLabelVecAt( 
+internal void copyLabelVecAt(
                        VectorFlt labelVec,
                        int row )
 {
@@ -92,6 +96,9 @@ if( columns != repubParagArray.getColumns())
           "dem and repub columns not equal." );
   }
 
+// The batch array is going to become a
+// Matrix in later versions.
+
 // If the size is not already set.
 batchArray.setSize( batchSize + 2, columns );
 labelArray.setSize( batchSize + 2, 3 );
@@ -111,7 +118,6 @@ labelVec.setSize( 3 );
 labelVec.setVal( 0, 0 ); // Bias is not used.
 
 for( int count = 0; count < (batchSize / 2);
-// for( int count = 0; count < batchSize;
                                 count++ )
   {
   if( copyAt >= lastRow )

@@ -122,8 +122,6 @@ mData.showStatus( "NeuralNet.test() end." );
 
 
 
-// Copy this function to do it as an average
-// for a batch.  oneEpochAvg()
 
 private void oneEpoch(
                   VectorArray demParagArray,
@@ -142,13 +140,23 @@ int batchSize = batch.getSize();
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
+  // The batch array is going to become a
+  // Matrix in later versions.  And averaging
+  // some values doesn't come in to this
+  // until that batch is a Matrix.
+
   if( !batch.makeOneBatch( startRow,
                      demParagArray,
                      repubParagArray ))
     return; // No more batches.
 
-  // outputLayer.clearAllDeltaAvg();
-  // hiddenLayer.clearAllDeltaAvg();
+  // Average values would be cleared to
+  // zero here before the batch-Matrix
+  // operations in what is now a loop.
+  // All rows in the matrix would be getting
+  // multiplied by the same weight-matrix
+  // before that weight-matrix gets
+  // changed.
 
   for( int rowCount = 0; rowCount < batchSize;
                                     rowCount++ )
@@ -161,12 +169,19 @@ for( int batchCount = 0; batchCount < 1000;
     if( mData.getCancelled())
       return;
 
-    // Not doing an average for the batch here.
-    // }
-
     // Adjusting weights and biases comes
     // after the backProp() sets the
     // delta values.
+
+    // } matrix loop end.
+
+    // After a future batch-matrix is done
+    // being multiplied, the weight and
+    // biases would be adjusted after what
+    // is now a loop for the batch rows.
+
+    // Here the weights are being adjusted
+    // after every batch row.
 
     outputLayer.adjustBias( learnRate );
     hiddenLayer1.adjustBias( learnRate );
