@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -20,7 +18,7 @@ using System;
 
 
 
-public class NeuralNet1
+public class NeuralNet2
 {
 private MainData mData;
 
@@ -30,29 +28,29 @@ private MainData mData;
 private float learnRate = 0.002F;
 
 private Batch1 batch;
-private NeuronLayer1 inputLayer;
-private NeuronLayer1 hiddenLayer1;
-// private NeuronLayer1 hiddenLayer2;
-private NeuronLayer1 outputLayer;
+private NeuronLayer2 inputLayer;
+private NeuronLayer2 hiddenLayer1;
+// private NeuronLayer2 hiddenLayer2;
+private NeuronLayer2 outputLayer;
 private VectorFlt errorOutVec;
 
 
 
 
-private NeuralNet1()
+private NeuralNet2()
 {
 }
 
 
 
-internal NeuralNet1( MainData useMainData )
+internal NeuralNet2( MainData useMainData )
 {
 mData = useMainData;
 
-inputLayer = new NeuronLayer1( mData );
-hiddenLayer1 = new NeuronLayer1( mData );
-// hiddenLayer2 = new NeuronLayer1( mData );
-outputLayer = new NeuronLayer1( mData );
+inputLayer = new NeuronLayer2( mData );
+hiddenLayer1 = new NeuronLayer2( mData );
+// hiddenLayer2 = new NeuronLayer2( mData );
+outputLayer = new NeuronLayer2( mData );
 
 errorOutVec = new VectorFlt( mData );
 batch = new Batch1( mData );
@@ -390,5 +388,3 @@ hiddenLayer1.setDeltaForHidden();
 
 
 } // Class
-
-*/

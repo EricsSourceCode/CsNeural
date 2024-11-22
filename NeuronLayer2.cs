@@ -1,4 +1,3 @@
-/*
 // Copyright Eric Chauvin 2024.
 
 
@@ -27,31 +26,31 @@ using System;
 
 
 
-public class NeuronLayer1
+public class NeuronLayer2
 {
 private MainData mData;
-private Neuron1[] neuronAr;
-private NeuronLayer1 prevLayer;
-private NeuronLayer1 nextLayer;
+private Neuron2[] neuronAr;
+private NeuronLayer2 prevLayer;
+private NeuronLayer2 nextLayer;
 
 
 
-private NeuronLayer1()
+private NeuronLayer2()
 {
 }
 
 
 
 
-internal NeuronLayer1( MainData useMainData )
+internal NeuronLayer2( MainData useMainData )
 {
 mData = useMainData;
 
 try
 {
-neuronAr = new Neuron1[2];
+neuronAr = new Neuron2[2];
 for( int count = 0; count < 2; count++ )
-  neuronAr[count] = new Neuron1( mData );
+  neuronAr[count] = new Neuron2( mData );
 
 }
 catch( Exception ) // Except )
@@ -79,9 +78,9 @@ if( howBig == arraySize )
 
 try
 {
-neuronAr = new Neuron1[howBig];
+neuronAr = new Neuron2[howBig];
 for( int count = 0; count < howBig; count++ )
-  neuronAr[count] = new Neuron1( mData );
+  neuronAr[count] = new Neuron2( mData );
 
 }
 catch( Exception ) // Except )
@@ -93,9 +92,7 @@ catch( Exception ) // Except )
 
 
 
-
-
-////////////
+/*
 internal void setWeightArSize( int setTo )
 {
 // All of the neurons in this layer have
@@ -110,14 +107,12 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].setWeightVecSize( setTo );
 
 }
-///////////
-
-
+*/
 
 
 internal void setLayers(
-                     NeuronLayer1 usePrevLayer,
-                     NeuronLayer1 useNextLayer )
+                     NeuronLayer2 usePrevLayer,
+                     NeuronLayer2 useNextLayer )
 {
 // A layer can be null if it's not there.
 
@@ -217,7 +212,7 @@ for( int count = 1; count < max; count++ )
 }
 
 
-////////////
+/*
 internal void calcActReLU()
 {
 int max = neuronAr.Length;
@@ -225,10 +220,7 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].calcActReLU();
 
 }
-//////////////
-
-
-
+*/
 
 
 // internal void clearAllDeltaAvg()
@@ -482,4 +474,3 @@ for( int countPrev = 1; countPrev < maxPrev;
 
 
 } // Class
-*/

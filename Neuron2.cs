@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -28,26 +26,26 @@ using System;
 
 
 
-public class Neuron1
+public class Neuron2
 {
 private MainData mData;
 private float delta = 0;
 // private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
-private NeuronLayer1 prevLayer;
-private NeuronLayer1 nextLayer;
+private NeuronLayer2 prevLayer;
+private NeuronLayer2 nextLayer;
 private VectorFlt weightVec;
 
 
 
 
-private Neuron1()
+private Neuron2()
 {
 }
 
 
-internal Neuron1( MainData useMainData )
+internal Neuron2( MainData useMainData )
 {
 mData = useMainData;
 weightVec = new VectorFlt( mData );
@@ -55,8 +53,8 @@ weightVec = new VectorFlt( mData );
 
 
 internal void setLayers(
-               NeuronLayer1 usePrevLayer,
-               NeuronLayer1 useNextLayer )
+               NeuronLayer2 usePrevLayer,
+               NeuronLayer2 useNextLayer )
 {
 // A layer can be null if it's not there.
 
@@ -112,15 +110,13 @@ return activation;
 
 
 
-////////////
+/*
 internal float calcActReLU()
 {
 activation = Activ.reLU( zSum );
 return activation;
 }
-///////////
-
-
+*/
 
 
 
@@ -245,4 +241,3 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
-*/
