@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -32,7 +30,6 @@ private float learnRate = 0.002F;
 private Batch1 batch;
 private NeuronLayer1 inputLayer;
 private NeuronLayer1 hiddenLayer1;
-// private NeuronLayer1 hiddenLayer2;
 private NeuronLayer1 outputLayer;
 private VectorFlt errorOutVec;
 
@@ -51,7 +48,6 @@ mData = useMainData;
 
 inputLayer = new NeuronLayer1( mData );
 hiddenLayer1 = new NeuronLayer1( mData );
-// hiddenLayer2 = new NeuronLayer1( mData );
 outputLayer = new NeuronLayer1( mData );
 
 errorOutVec = new VectorFlt( mData );
@@ -67,7 +63,6 @@ mData.showStatus( "NeuralNet1.test()." );
 
 TimeEC startTime = new TimeEC();
 startTime.setToNow();
-
 
 int columns = demParagArray.getColumns();
 if( columns != repubParagArray.getColumns() )
@@ -85,7 +80,7 @@ setupNetTopology( columns );
 
 setRandomWeights();
 
-double showMin = 0;
+double showMin = 0; // Show minutes.
 
 for( int count = 0; count < epoch; count++ )
   {
@@ -102,8 +97,6 @@ for( int count = 0; count < epoch; count++ )
     }
 
   mData.showStatus( "Epoch: " + count );
-
-  // Also do oneEpochAvg().
 
   oneEpoch( demParagArray, repubParagArray );
   if( mData.getCancelled())
@@ -135,10 +128,9 @@ private void oneEpoch(
 
 int startRow = 0;
 
-// while( there is still data... )
-
 int batchSize = batch.getSize();
 
+// while( there is still data... )
 for( int batchCount = 0; batchCount < 1000;
                          batchCount++ )
   {
@@ -151,14 +143,6 @@ for( int batchCount = 0; batchCount < 1000;
                      demParagArray,
                      repubParagArray ))
     return; // No more batches.
-
-  // Average values would be cleared to
-  // zero here before the batch-Matrix
-  // operations in what is now a loop.
-  // All rows in the matrix would be getting
-  // multiplied by the same weight-matrix
-  // before that weight-matrix gets
-  // changed.
 
   for( int rowCount = 0; rowCount < batchSize;
                                     rowCount++ )
@@ -175,23 +159,14 @@ for( int batchCount = 0; batchCount < 1000;
     // after the backProp() sets the
     // delta values.
 
-    // } matrix loop end.
-
-    // After a future batch-matrix is done
-    // being multiplied, the weight and
-    // biases would be adjusted after what
-    // is now a loop for the batch rows.
-
     // Here the weights are being adjusted
     // after every batch row.
 
     outputLayer.adjustBias( learnRate );
     hiddenLayer1.adjustBias( learnRate );
-    // hiddenLayer2.adjustBias( learnRate );
 
     outputLayer.adjustWeights( learnRate );
     hiddenLayer1.adjustWeights( learnRate );
-    // hiddenLayer2.adjustWeights( learnRate );
 
     if( mData.getCancelled())
       return;
@@ -216,7 +191,6 @@ int hiddenSize = layerSize * 2;
 
 inputLayer.setSize( layerSize );
 hiddenLayer1.setSize( hiddenSize );
-// hiddenLayer2.setSize( hiddenSize );
 
 // One for the bias at zero, and two more.
 outputLayer.setSize( 3 );
@@ -224,10 +198,6 @@ outputLayer.setSize( 3 );
 inputLayer.setLayers( null, hiddenLayer1 );
 hiddenLayer1.setLayers( inputLayer,
                         outputLayer );
-                        // hiddenLayer2 );
-
-// hiddenLayer2.setLayers( hiddenLayer1,
-//                         outputLayer );
 
 outputLayer.setLayers( hiddenLayer1, null );
 
@@ -253,7 +223,6 @@ mData.showStatus( "randMax: " +
 // inputLayer.setRandomWeights()
 
 hiddenLayer1.setRandomWeights( randMax );
-// hiddenLayer2.setRandomWeights( randMax );
 outputLayer.setRandomWeights( randMax );
 }
 
@@ -290,9 +259,6 @@ private void forwardPass()
 {
 hiddenLayer1.calcZ();
 hiddenLayer1.calcActSigmoid();
-
-// hiddenLayer2.calcZ();
-// hiddenLayer2.calcActSigmoid();
 
 outputLayer.calcZ();
 outputLayer.calcActSigmoid();
@@ -370,9 +336,6 @@ float delta2 = dErrorA2 *
 
 outputLayer.setDeltaAt( 1, delta1 );
 outputLayer.setDeltaAt( 2, delta2 );
-
-// outputLayer.addToDeltaAvgAt( 1, delta1 );
-// outputLayer.addToDeltaAvgAt( 2, delta2 );
 }
 
 
@@ -380,9 +343,6 @@ outputLayer.setDeltaAt( 2, delta2 );
 
 private void setDeltaForHidden()
 {
-// The later layer goes first.
-
-// hiddenLayer2.setDeltaForHidden();
 hiddenLayer1.setDeltaForHidden();
 }
 
@@ -391,4 +351,4 @@ hiddenLayer1.setDeltaForHidden();
 
 } // Class
 
-*/
+

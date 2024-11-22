@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -110,13 +112,13 @@ return activation;
 
 
 
-/*
+//////////
 internal float calcActReLU()
 {
 activation = Activ.reLU( zSum );
 return activation;
 }
-*/
+//////////
 
 
 
@@ -241,3 +243,4 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
+*/

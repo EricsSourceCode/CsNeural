@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -32,7 +30,6 @@ public class Neuron1
 {
 private MainData mData;
 private float delta = 0;
-// private float deltaAvg = 0;
 private float zSum = 0;
 private float activation = 0;
 private NeuronLayer1 prevLayer;
@@ -112,17 +109,6 @@ return activation;
 
 
 
-////////////
-internal float calcActReLU()
-{
-activation = Activ.reLU( zSum );
-return activation;
-}
-///////////
-
-
-
-
 
 internal float getZSum()
 {
@@ -136,28 +122,12 @@ return delta;
 }
 
 
-// internal float getDeltaAvg()
-// {
-// return deltaAvg;
-// }
-
 
 internal void setDelta( float setTo )
 {
 delta = setTo;
 }
 
-
-// internal void addToDeltaAvg( float addTo )
-// {
-// deltaAvg += addTo;
-// }
-
-
-// internal void clearDeltaAvg()
-// {
-// deltaAvg = 0;
-// }
 
 
 
@@ -207,8 +177,8 @@ weightVec.setVal( where, setTo );
 
 
 
-// Randomness breaks up symmetry so all of
-// the neurons/weights are not the same.
+// Randomness breaks up symmetry.
+
 
 
 internal void setRandomWeights( float maxWeight,
@@ -223,8 +193,6 @@ int seed = (int)(seedTime.getIndex()
 seed += randIndex;
 
 Random rand = new Random( seed );
-// float halfWeight = maxWeight / 2;
-
 int max = weightVec.getSize();
 
 // Random value between 0 and maxWeight.
@@ -236,8 +204,6 @@ for( int count = 0; count < max; count++ )
   float weight = (float)(rand.NextDouble() *
                                   maxWeight );
 
-  // weight -= halfWeight;
-
   weightVec.setVal( count, weight );
   }
 }
@@ -245,4 +211,4 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
-*/
+

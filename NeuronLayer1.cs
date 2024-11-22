@@ -1,4 +1,3 @@
-/*
 // Copyright Eric Chauvin 2024.
 
 
@@ -56,7 +55,6 @@ for( int count = 0; count < 2; count++ )
 }
 catch( Exception ) // Except )
   {
-  // freeAll();
   throw new Exception(
           "Not enough memory for NeuronLayer." );
   }
@@ -90,27 +88,6 @@ catch( Exception ) // Except )
           "Not enough memory for NeuronLayer." );
   }
 }
-
-
-
-
-
-////////////
-internal void setWeightArSize( int setTo )
-{
-// All of the neurons in this layer have
-// the same number of inputs from the
-// previous layer.
-
-int max = neuronAr.Length;
-
-// There is no neuron at zero.
-// Starting at index 1.
-for( int count = 1; count < max; count++ )
-  neuronAr[count].setWeightVecSize( setTo );
-
-}
-///////////
 
 
 
@@ -217,28 +194,6 @@ for( int count = 1; count < max; count++ )
 }
 
 
-////////////
-internal void calcActReLU()
-{
-int max = neuronAr.Length;
-for( int count = 1; count < max; count++ )
-  neuronAr[count].calcActReLU();
-
-}
-//////////////
-
-
-
-
-
-// internal void clearAllDeltaAvg()
-// {
-// int max = neuronAr.Length;
-// for( int count = 1; count < max; count++ )
-  // neuronAr[count].clearDeltaAvg();
-
-// }
-
 
 
 internal float getDeltaAt( int where )
@@ -253,41 +208,6 @@ RangeT.test( where, 1, max - 1,
 
 return neuronAr[where].getDelta();
 }
-
-
-
-// internal float getDeltaAvgAt( int where )
-// {
-// int max = neuronAr.Length;
-// RangeT.test( where, 1, max - 1,
-//      "NeuronLayer.getDeltaAvgAt() range." );
-
-// return neuronAr[where].getDeltaAvg();
-// }
-
-
-
-
-// internal void addToDeltaAvgAt( int where,
-//                               float addTo )
-// {
-// int max = neuronAr.Length;
-// RangeT.test( where, 1, max - 1,
-//     "NeuronLayer.addToDeltaAvgAt() range." );
-
-// neuronAr[where].addToDeltaAvg( addTo );
-// }
-
-
-
-// internal void clearDeltaAvgAt( int where )
-// {
-// int max = neuronAr.Length;
-// RangeT.test( where, 1, max - 1,
-//      "NeuronLayer.clearDeltaAvgAt() range." );
-
-// neuronAr[where].clearDeltaAvg();
-// }
 
 
 
@@ -368,12 +288,14 @@ int maxNext = nextLayer.getSize();
 // is the only thing at zero.
 
 // Big exponential loops.
+// A lot of computation is done in
+// these loops.
 
 // countT is the neuron in this layer.
 
 for( int countT = 1; countT < max; countT++ )
   {
-  if( (countT % 10) == 0 )
+  if( (countT % 100) == 0 )
     {
     if( !mData.checkEvents())
       return false;
@@ -401,14 +323,11 @@ for( int countT = 1; countT < max; countT++ )
     // Using the z in this layer.
     float partSum = (weight * deltaNext) *
                         Activ.drvSigmoid( z );
-                        // drvReLU( z )
+
     sumToSet += partSum;
     }
 
   setDeltaAt( countT, sumToSet );
-
-  // toSetLayer.addToDeltaAvgAt( countT,
-  //                            sumToSet );
   }
 
 return true;
@@ -428,12 +347,6 @@ for( int count = 1; count < max; count++ )
   // bias for this neuron.
 
   float delta = getDeltaAt( count );
-  // float delta = layer.getDeltaAvgAt( count );
-  // delta = delta / batchSize;
-
-  // ======
-  // A product for these two vectors.
-
   float bias = getBias( count );
   float biasAdj = delta * rate;
   bias += biasAdj;
@@ -454,7 +367,7 @@ int max = getSize();
 for( int countPrev = 1; countPrev < maxPrev;
                         countPrev++ )
   {
-  if( (countPrev % 10) == 0 )
+  if( (countPrev % 100) == 0 )
     {
     if( !mData.checkEvents())
       return;
@@ -466,8 +379,6 @@ for( int countPrev = 1; countPrev < maxPrev;
   for( int count = 1; count < max; count++ )
     {
     float delta = getDeltaAt( count );
-    // float delta = getDeltaAvgAt( count );
-    // delta = delta / batchSize;
 
     float weight = getWeight( count,
                               countPrev );
@@ -482,4 +393,4 @@ for( int countPrev = 1; countPrev < maxPrev;
 
 
 } // Class
-*/
+
