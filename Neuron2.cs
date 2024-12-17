@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -112,13 +110,13 @@ return activation;
 
 
 
-//////////
+/*
 internal float calcActReLU()
 {
 activation = Activ.reLU( zSum );
 return activation;
 }
-//////////
+*/
 
 
 
@@ -183,6 +181,15 @@ weightVec.setVal( 0, setTo );
 }
 
 
+
+internal void copyWeightVec( VectorFlt toGet )
+{
+toGet.copy( weightVec );
+}
+
+
+
+
 internal float getWeight( int where )
 {
 int max = weightVec.getSize();
@@ -243,4 +250,3 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
-*/

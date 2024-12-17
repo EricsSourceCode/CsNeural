@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -393,4 +395,6 @@ for( int countPrev = 1; countPrev < maxPrev;
 
 
 } // Class
+
+*/
 

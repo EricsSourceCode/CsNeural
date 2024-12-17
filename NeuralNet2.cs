@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -193,6 +191,8 @@ for( int batchCount = 0; batchCount < 1000;
     hiddenLayer1.adjustWeights( learnRate );
     // hiddenLayer2.adjustWeights( learnRate );
 
+    show3D();
+
     if( mData.getCancelled())
       return;
 
@@ -200,6 +200,21 @@ for( int batchCount = 0; batchCount < 1000;
 
   startRow += batchSize;
   }
+}
+
+
+
+private void show3D()
+{
+VectorFlt weightVec1 = new VectorFlt( mData );
+VectorFlt weightVec2 = new VectorFlt( mData );
+outputLayer.copyWeightVecAt( 1, weightVec1 );
+outputLayer.copyWeightVecAt( 2, weightVec2 );
+
+mData.setFromWeightVecs( weightVec1,
+                         weightVec2 );
+
+
 }
 
 
@@ -390,4 +405,3 @@ hiddenLayer1.setDeltaForHidden();
 
 
 } // Class
-*/

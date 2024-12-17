@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -351,4 +353,4 @@ hiddenLayer1.setDeltaForHidden();
 
 } // Class
 
-
+*/

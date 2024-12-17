@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -211,4 +213,6 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
+
+*/
 
