@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -195,3 +197,5 @@ testVec.setFromString( testStr );
 
 
 } // Class
+
+*/

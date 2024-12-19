@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -65,7 +67,6 @@ mData.showStatus( "NeuralNet1.test()." );
 
 TimeEC startTime = new TimeEC();
 startTime.setToNow();
-
 
 int columns = demParagArray.getColumns();
 if( columns != repubParagArray.getColumns() )
@@ -405,3 +406,5 @@ hiddenLayer1.setDeltaForHidden();
 
 
 } // Class
+
+*/

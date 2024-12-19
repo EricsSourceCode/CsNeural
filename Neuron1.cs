@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -16,7 +14,8 @@ using System;
 
 
 
-
+// This way of doing the bias is for a
+// later version:
 // The weight at index 0 is the standard way
 // of doing the bias.  The activation is fixed
 // at 1 so the weight times 1 makes the
@@ -38,6 +37,10 @@ private NeuronLayer1 prevLayer;
 private NeuronLayer1 nextLayer;
 private VectorFlt weightVec;
 
+// This bias is separate from the weights
+// in this version.
+
+private float bias = 0;
 
 
 
@@ -63,7 +66,7 @@ prevLayer = usePrevLayer;
 nextLayer = useNextLayer;
 
 if( prevLayer == null )
-  weightVec.setSize( 1 );
+  weightVec.setSize( 1 ); // Not used.
 else
   weightVec.setSize( prevLayer.getSize());
 
@@ -87,11 +90,10 @@ if( max != prevLayer.getSize())
         "Neuron.calcZ() sizes not equal." );
   }
 
-// Start with the bias value at zero.
-float z = weightVec.getVal( 0 );
+// Start with the bias value.
+float z = bias;
 
-// Starting past the bias at 1.
-for( int count = 1; count < max; count++ )
+for( int count = 0; count < max; count++ )
   {
   z += prevLayer.getActivationAt( count ) *
                    weightVec.getVal( count );
@@ -147,20 +149,26 @@ activation = setTo;
 
 internal float getBias()
 {
-return weightVec.getVal( 0 );
+return bias;
 }
 
 
 internal void setBias( float setTo )
 {
-weightVec.setVal( 0, setTo );
+bias = setTo;
+}
+
+
+internal void copyWeightVec( VectorFlt toGet )
+{
+toGet.copy( weightVec );
 }
 
 
 internal float getWeight( int where )
 {
 int max = weightVec.getSize();
-RangeT.test( where, 1, max - 1,
+RangeT.test( where, 0, max - 1,
        "Neuron.getWeight() range." );
 
 return weightVec.getVal( where );
@@ -171,7 +179,7 @@ return weightVec.getVal( where );
 internal void setWeight( int where, float setTo )
 {
 int max = weightVec.getSize();
-RangeT.test( where, 1, max - 1,
+RangeT.test( where, 0, max - 1,
        "Neuron.setWeight() range." );
 
 weightVec.setVal( where, setTo );
@@ -199,7 +207,7 @@ int max = weightVec.getSize();
 
 // Random value between 0 and maxWeight.
 
-// This sets a random bias at index zero too.
+bias = (float)(rand.NextDouble() * maxWeight );
 
 for( int count = 0; count < max; count++ )
   {
@@ -213,6 +221,3 @@ for( int count = 0; count < max; count++ )
 
 
 } // Class
-
-*/
-

@@ -1,5 +1,3 @@
-/*
-
 // Copyright Eric Chauvin 2024.
 
 
@@ -170,6 +168,8 @@ for( int batchCount = 0; batchCount < 1000;
     outputLayer.adjustWeights( learnRate );
     hiddenLayer1.adjustWeights( learnRate );
 
+    show3D();
+
     if( mData.getCancelled())
       return;
 
@@ -181,21 +181,36 @@ for( int batchCount = 0; batchCount < 1000;
 
 
 
+private void show3D()
+{
+======= So now show the bias with it.
+
+VectorFlt weightVec0 = new VectorFlt( mData );
+VectorFlt weightVec1 = new VectorFlt( mData );
+outputLayer.copyWeightVecAt( 0, weightVec0 );
+outputLayer.copyWeightVecAt( 1, weightVec1 );
+
+mData.setFromWeightVecs( weightVec0,
+                         weightVec1 );
+
+
+}
+
+
 
 private void setupNetTopology( int columns )
 {
 // Check WebPageDct.neuralSearch() for the
 // minimum story text length.
 
-// Plus 1 for the bias at zero.
-int layerSize = columns + 1;
+
+int layerSize = columns;
 int hiddenSize = layerSize * 2;
 
 inputLayer.setSize( layerSize );
 hiddenLayer1.setSize( hiddenSize );
 
-// One for the bias at zero, and two more.
-outputLayer.setSize( 3 );
+outputLayer.setSize( 2 );
 
 inputLayer.setLayers( null, hiddenLayer1 );
 hiddenLayer1.setLayers( inputLayer,
@@ -203,7 +218,7 @@ hiddenLayer1.setLayers( inputLayer,
 
 outputLayer.setLayers( hiddenLayer1, null );
 
-errorOutVec.setSize( 3 );
+errorOutVec.setSize( 2 );
 }
 
 
@@ -238,8 +253,7 @@ private void setInputRow( int row )
 
 int col = batch.getColumns();
 
-// Plus 1 for the bias at zero.
-int layerSize = col + 1;
+int layerSize = col;
 
 if( layerSize != inputLayer.getSize())
   {
@@ -250,7 +264,7 @@ if( layerSize != inputLayer.getSize())
 for( int count = 0; count < col; count++ )
   {
   float val = batch.getVal( row, count );
-  inputLayer.setActivationAt( count + 1, val );
+  inputLayer.setActivationAt( count, val );
   }
 }
 
@@ -289,25 +303,24 @@ batch.copyLabelVecAt( labelVec, row );
 
 if( row < 2 )
   {
+  float showAct0 = actVec.getVal( 0 );
   float showAct1 = actVec.getVal( 1 );
-  float showAct2 = actVec.getVal( 2 );
+  float showLabel0 = labelVec.getVal( 0 );
   float showLabel1 = labelVec.getVal( 1 );
-  float showLabel2 = labelVec.getVal( 2 );
 
   mData.showStatus( " " );
+  mData.showStatus( "Act0: " +
+                 showAct0.ToString( "N4" ) );
   mData.showStatus( "Act1: " +
                  showAct1.ToString( "N4" ) );
-  mData.showStatus( "Act2: " +
-                 showAct2.ToString( "N4" ) );
+  mData.showStatus( "Label0: " +
+                 showLabel0.ToString( "N0" ) );
   mData.showStatus( "Label1: " +
                  showLabel1.ToString( "N0" ) );
-  mData.showStatus( "Label2: " +
-                 showLabel2.ToString( "N0" ) );
   }
 
 // label - act
 errorVec.subtract( labelVec, actVec );
-errorVec.setVal( 0, 0 );
 
 // For a Cost function:
 // float errorNormSqr = errorVec.normSquared();
@@ -317,27 +330,27 @@ errorVec.setVal( 0, 0 );
 // That is the Chain Rule for those
 // derivatives.
 
+float z0 = outputLayer.getZSumAt( 0 );
 float z1 = outputLayer.getZSumAt( 1 );
-float z2 = outputLayer.getZSumAt( 2 );
 
 // The value of derivSigmoid() can be
 // between 0 and 0.25.
 
 // dError / dA = dErrorA1
+float dErrorA0 = errorVec.getVal( 0 );
 float dErrorA1 = errorVec.getVal( 1 );
-float dErrorA2 = errorVec.getVal( 2 );
 
+float delta0 = dErrorA0 *
+                      Activ.drvSigmoid( z0 );
 float delta1 = dErrorA1 *
                       Activ.drvSigmoid( z1 );
-float delta2 = dErrorA2 *
-                      Activ.drvSigmoid( z2 );
 
 // Delta is on the z side of the activation
 // function.  It is the z for this output
 // layer.
 
+outputLayer.setDeltaAt( 0, delta0 );
 outputLayer.setDeltaAt( 1, delta1 );
-outputLayer.setDeltaAt( 2, delta2 );
 }
 
 
@@ -352,5 +365,3 @@ hiddenLayer1.setDeltaForHidden();
 
 
 } // Class
-
-*/

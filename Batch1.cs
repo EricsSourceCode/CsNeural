@@ -1,4 +1,3 @@
-/*
 // Copyright Eric Chauvin 2024.
 
 
@@ -102,7 +101,7 @@ if( columns != repubParagArray.getColumns())
 
 // If the size is not already set.
 batchArray.setSize( batchSize + 2, columns );
-labelArray.setSize( batchSize + 2, 3 );
+labelArray.setSize( batchSize + 2, 2 );
 
 batchArray.clearLastAppend();
 labelArray.clearLastAppend();
@@ -115,8 +114,7 @@ setTestVec( testDemVec, columns,
 setTestVec( testRepubVec, columns,
                               "Fox News " );
 
-labelVec.setSize( 3 );
-labelVec.setVal( 0, 0 ); // Bias is not used.
+labelVec.setSize( 2 );
 
 for( int count = 0; count < (batchSize / 2);
                                 count++ )
@@ -134,8 +132,8 @@ for( int count = 0; count < (batchSize / 2);
   copyVec.copyUpTo( testDemVec, testCopySize );
 
   batchArray.appendVecCopy( copyVec );
-  labelVec.setVal( 1, 0 ); // Democrat
-  labelVec.setVal( 2, 1 );
+  labelVec.setVal( 0, 0 ); // Democrat
+  labelVec.setVal( 1, 1 );
   labelArray.appendVecCopy( labelVec );
 
 
@@ -147,8 +145,8 @@ for( int count = 0; count < (batchSize / 2);
 
   batchArray.appendVecCopy( copyVec );
 
-  labelVec.setVal( 1, 1 ); // Republican
-  labelVec.setVal( 2, 0 );
+  labelVec.setVal( 0, 1 ); // Republican
+  labelVec.setVal( 1, 0 );
   labelArray.appendVecCopy( labelVec );
 
   copyAt++;
@@ -196,4 +194,3 @@ testVec.setFromString( testStr );
 
 
 } // Class
-*/

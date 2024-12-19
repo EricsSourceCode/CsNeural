@@ -1,3 +1,5 @@
+/*
+
 // Copyright Eric Chauvin 2024.
 
 
@@ -92,7 +94,7 @@ catch( Exception ) // Except )
 
 
 
-/*
+///////////
 internal void setWeightArSize( int setTo )
 {
 // All of the neurons in this layer have
@@ -107,7 +109,7 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].setWeightVecSize( setTo );
 
 }
-*/
+/////////
 
 
 
@@ -213,7 +215,7 @@ for( int count = 1; count < max; count++ )
 }
 
 
-/*
+///////////
 internal void calcActReLU()
 {
 int max = neuronAr.Length;
@@ -221,7 +223,7 @@ for( int count = 1; count < max; count++ )
   neuronAr[count].calcActReLU();
 
 }
-*/
+/////////
 
 
 
@@ -490,3 +492,5 @@ neuronAr[where].copyWeightVec( toGet );
 
 
 } // Class
+
+*/
