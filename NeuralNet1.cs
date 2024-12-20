@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2024.
+// Copyright Eric Chauvin 2024 - 2025.
 
 
 
@@ -183,8 +183,6 @@ for( int batchCount = 0; batchCount < 1000;
 
 private void show3D()
 {
-======= So now show the bias with it.
-
 VectorFlt weightVec0 = new VectorFlt( mData );
 VectorFlt weightVec1 = new VectorFlt( mData );
 outputLayer.copyWeightVecAt( 0, weightVec0 );
