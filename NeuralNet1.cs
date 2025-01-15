@@ -185,12 +185,19 @@ private void show3D()
 {
 VectorFlt weightVec0 = new VectorFlt( mData );
 VectorFlt weightVec1 = new VectorFlt( mData );
+VectorFlt biasVec0 = new VectorFlt( mData );
+VectorFlt biasVec1 = new VectorFlt( mData );
+
 outputLayer.copyWeightVecAt( 0, weightVec0 );
 outputLayer.copyWeightVecAt( 1, weightVec1 );
+
+outputLayer.copyBiasVec( biasVec0 );
+hiddenLayer.copyBiasVec( biasVec1 );
 
 mData.setFromWeightVecs( weightVec0,
                          weightVec1 );
 
+mData.setFromBiasVecs( biasVec1, biasVec2 );
 
 }
 

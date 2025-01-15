@@ -394,4 +394,19 @@ neuronAr[where].copyWeightVec( toGet );
 }
 
 
+
+
+internal void copyBiasVec( VectorFlt toGet )
+{
+int last = getSize();
+toGet.setSize( last );
+
+for( int count = 0; count < last; count++ )
+  {
+  float setBias = neuronAr[count].getBias();
+  toGet.setVal( count, setBias );
+  }
+}
+
+
 } // Class
