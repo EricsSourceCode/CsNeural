@@ -74,7 +74,7 @@ if( columns != repubParagArray.getColumns() )
 // One epoch is one complete pass through
 // the entire training set.
 
-int epoch = 2;
+int epoch = 200;
 
 setupNetTopology( columns );
 
@@ -185,19 +185,18 @@ private void show3D()
 {
 VectorFlt weightVec0 = new VectorFlt( mData );
 VectorFlt weightVec1 = new VectorFlt( mData );
-VectorFlt biasVec0 = new VectorFlt( mData );
 VectorFlt biasVec1 = new VectorFlt( mData );
 
 outputLayer.copyWeightVecAt( 0, weightVec0 );
 outputLayer.copyWeightVecAt( 1, weightVec1 );
 
-outputLayer.copyBiasVec( biasVec0 );
-hiddenLayer.copyBiasVec( biasVec1 );
+outputLayer.copyBiasVec( biasVec1 );
+// hiddenLayer1.copyBiasVec( biasVec2 );
 
 mData.setFromWeightVecs( weightVec0,
                          weightVec1 );
 
-mData.setFromBiasVecs( biasVec1, biasVec2 );
+mData.setFromBiasVec1( biasVec1 );
 
 }
 
