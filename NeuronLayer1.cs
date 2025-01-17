@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2024.
+// Copyright Eric Chauvin 2024 - 2025.
 
 
 
@@ -407,6 +407,36 @@ for( int count = 0; count < last; count++ )
   toGet.setVal( count, setBias );
   }
 }
+
+
+
+
+internal void makeWeightVecArray(
+                           VectorArray toGet )
+{
+toGet.clearLastAppend();
+
+VectorFlt vec = new VectorFlt( mData );
+
+int max = neuronAr.Length;
+if( max < 1 )
+  return;
+
+copyWeightVecAt( 0, vec );
+
+int columns = vec.getSize();
+
+// Start with 100 rows.
+
+toGet.setSize( 100, columns );
+
+for( int count = 0; count < max; count++ )
+  {
+  copyWeightVecAt( count, vec );
+  toGet.appendVecCopy( vec );
+  }
+}
+
 
 
 } // Class
