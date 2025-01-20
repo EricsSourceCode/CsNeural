@@ -168,7 +168,12 @@ for( int batchCount = 0; batchCount < 1000;
     outputLayer.adjustWeights( learnRate );
     hiddenLayer1.adjustWeights( learnRate );
 
-    show3D();
+    // Showing this graphics really slows
+    // it down.  So only update it once
+    // every ... counts.
+
+    if( (rowCount % 500) == 0 )
+      show3D();
 
     if( mData.getCancelled())
       return;
